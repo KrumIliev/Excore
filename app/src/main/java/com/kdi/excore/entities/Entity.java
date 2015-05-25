@@ -9,30 +9,18 @@ import com.kdi.excore.game.Game;
  */
 public abstract class Entity {
 
-    protected double x;
-    protected double y;
-    protected double r;
+    public double x;
+    public double y;
+    public double r;
 
-    protected double dx;
-    protected double dy;
-    protected double rad;
-    protected double speed;
+    public double dx;
+    public double dy;
+    public double rad;
+    public double speed;
 
     protected Game gameView;
 
     public abstract boolean update();
 
     public abstract void draw(Canvas canvas);
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getR() {
-        return r;
-    }
 }

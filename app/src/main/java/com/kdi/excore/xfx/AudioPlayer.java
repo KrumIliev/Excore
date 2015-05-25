@@ -58,14 +58,16 @@ public class AudioPlayer {
     }
 
     public void stopMusic() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-        }
+        if (mediaPlayer != null) mediaPlayer.release();
     }
 
     public void playSound(int sound) {
         soundPool.play(soundIds[sound], 1, 1, 1, 0, 1f);
+    }
+
+    public void dispose() {
+        if (mediaPlayer != null) mediaPlayer.release();
+        if (soundPool != null) soundPool.release();
     }
 
 

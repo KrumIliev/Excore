@@ -1,4 +1,4 @@
-package com.kdi.excore.xfx;
+package com.kdi.excore.animations;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

@@ -38,10 +38,10 @@ public class Bullet extends Entity {
 
     @Override
     public void draw(Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.WHITE);
-        canvas.drawCircle((float) x, (float) y, (float) r, paint);
+        gameView.paint.setStyle(Paint.Style.FILL);
+        gameView.paint.setColor(Color.WHITE);
+        canvas.drawCircle((float) x, (float) y, (float) r, gameView.paint);
+
+        gameView.resetPaint();
     }
 }

@@ -17,9 +17,11 @@ public class PowerUp extends Entity {
     public static final int TYPE_DESTROY = 4;
     public static final int TYPE_UPDATE_ENEMY = 6;
     public static final int TYPE_FASTER_ENEMY = 7;
-    public static final int TYPE_IMORTALITY = 8;
+    public static final int TYPE_IMMORTALITY = 8;
+    public static final int TYPE_DOUBLE_SCORE = 9;
 
-    private int type;
+
+    public int type;
     private int color;
 
     public PowerUp(Game gameView, int type, double x, double y) {
@@ -36,7 +38,7 @@ public class PowerUp extends Entity {
         if (type == TYPE_DESTROY) color = Color.RED;
         if (type == TYPE_UPDATE_ENEMY) color = Color.BLACK;
         if (type == TYPE_FASTER_ENEMY) color = Color.BLUE;
-        if (type == TYPE_IMORTALITY) color = Color.CYAN;
+        if (type == TYPE_IMMORTALITY) color = Color.CYAN;
     }
 
     @Override
@@ -48,20 +50,15 @@ public class PowerUp extends Entity {
 
     @Override
     public void draw(Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
+        gameView.paint.setStyle(Paint.Style.FILL);
+        gameView.paint.setColor(color);
+        canvas.drawRect((float) (x - r / 2), (float) (y - r / 2), (float) (x + r / 2), (float) (y + r / 2), gameView.paint);
 
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(color);
-        canvas.drawRect((float) (x - r / 2), (float) (y - r / 2), (float) (x + r / 2), (float) (y + r / 2), paint);
+        gameView.paint.setStyle(Paint.Style.STROKE);
+        gameView.paint.setColor(Color.WHITE);
+        gameView.paint.setStrokeWidth(3);
+        canvas.drawRect((float) (x - r / 2), (float) (y - r / 2), (float) (x + r / 2), (float) (y + r / 2), gameView.paint);
 
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.WHITE);
-        paint.setStrokeWidth(3);
-        canvas.drawRect((float) (x - r / 2), (float) (y - r / 2), (float) (x + r / 2), (float) (y + r / 2), paint);
-    }
-
-    public int getType() {
-        return type;
+        gameView.resetPaint();
     }
 }

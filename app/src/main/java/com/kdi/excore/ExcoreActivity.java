@@ -7,8 +7,9 @@ import android.view.WindowManager;
 
 import com.kdi.excore.game.Game;
 
-
 public class ExcoreActivity extends Activity {
+
+    private Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +19,13 @@ public class ExcoreActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(new Game(this));
+        game = new Game(this);
+        setContentView(game);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        game.dispose();
     }
 }

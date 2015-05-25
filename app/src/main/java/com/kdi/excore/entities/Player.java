@@ -3,10 +3,10 @@ package com.kdi.excore.entities;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.media.MediaPlayer;
 
-import com.kdi.excore.R;
 import com.kdi.excore.game.Game;
+import com.kdi.excore.states.PlayState;
+import com.kdi.excore.states.State;
 import com.kdi.excore.xfx.AudioPlayer;
 
 /**
@@ -14,31 +14,35 @@ import com.kdi.excore.xfx.AudioPlayer;
  */
 public class Player {
 
-    private float x;
-    private float y;
-    private float r;
+    public float x;
+    public float y;
+    public float r;
 
-    private float dx;
-    private float dy;
-    private int speed;
+    public float dx;
+    public float dy;
+    public int speed;
 
-    private long firingTimer;
-    private long firingDelay;
+    public long firingTimer;
+    public long firingDelay;
 
-    private boolean recovering;
-    private long recoveryTimer;
+    public boolean recovering;
+    public long recoveryTimer;
 
-    private int lives;
-    private int score;
+    public int lives;
+    public int score;
+    public int visibleScore;
+    public long scoreTimer;
 
-    private int powerLevel;
-    private int power;
-    private int[] requiredPower = {1, 2, 3, 4, 1};
+    public int powerLevel;
+    public int power;
+    public int[] requiredPower = {1, 2, 3, 4, 1};
 
     private Game gameView;
+    private PlayState playState;
 
-    public Player(Game gameView) {
+    public Player(Game gameView, State state) {
         this.gameView = gameView;
+        this.playState = (PlayState) state;
 
         x = gameView.getWidth() / 2;
         y = gameView.getHeight() - 50;
@@ -56,11 +60,17 @@ public class Player {
         recovering = false;
         recoveryTimer = 0;
         score = 0;
+        visibleScore = 0;
     }
 
     public void update() {
         move();
         shoot();
+
+        if (score < visibleScore) {
+            if (visibleScore - score > 100) score += 2;
+            else score++;
+        }
 
         if (recovering) {
             long elapsed = (System.nanoTime() - recoveryTimer) / 1000000;
@@ -104,61 +114,61 @@ public class Player {
             firingTimer = System.nanoTime();
 
             if (powerLevel == 0) {
-                gameView.playSound(AudioPlayer.SOUND_WEAPON_0);
-                gameView.addBullet(270, x, y - 10);
+                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_0);
+                playState.addBullet(270, x, y - 10);
             }
 
             if (powerLevel == 1) {
-                gameView.playSound(AudioPlayer.SOUND_WEAPON_1);
-                gameView.addBullet(270, x + 10, y - 10);
-                gameView.addBullet(270, x - 10, y - 10);
+                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_1);
+                playState.addBullet(270, x + 10, y - 10);
+                playState.addBullet(270, x - 10, y - 10);
             }
 
             if (powerLevel == 2) {
-                gameView.playSound(AudioPlayer.SOUND_WEAPON_2);
-                gameView.addBullet(275, x + 10, y - 10);
-                gameView.addBullet(265, x - 10, y - 10);
+                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_2);
+                playState.addBullet(275, x + 10, y - 10);
+                playState.addBullet(265, x - 10, y - 10);
             }
 
             if (powerLevel == 3) {
-                gameView.playSound(AudioPlayer.SOUND_WEAPON_3);
-                gameView.addBullet(270, x, y - 10);
-                gameView.addBullet(270, x + 10, y - 10);
-                gameView.addBullet(270, x - 10, y - 10);
+                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_3);
+                playState.addBullet(270, x, y - 10);
+                playState.addBullet(270, x + 10, y - 10);
+                playState.addBullet(270, x - 10, y - 10);
             }
 
             if (powerLevel == 4) {
-                gameView.playSound(AudioPlayer.SOUND_WEAPON_4);
-                gameView.addBullet(270, x, y - 10);
-                gameView.addBullet(275, x + 5, y - 10);
-                gameView.addBullet(265, x - 5, y - 10);
+                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_4);
+                playState.addBullet(270, x, y - 10);
+                playState.addBullet(275, x + 5, y - 10);
+                playState.addBullet(265, x - 5, y - 10);
             }
         }
     }
 
     public void draw(Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
 
         if (recovering) {
-            paint.setStyle(Paint.Style.FILL);
-            paint.setColor(Color.RED);
-            canvas.drawCircle(x, y, r, paint);
+            gameView.paint.setStyle(Paint.Style.FILL);
+            gameView.paint.setColor(Color.RED);
+            canvas.drawCircle(x, y, r, gameView.paint);
 
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setColor(Color.WHITE);
-            paint.setStrokeWidth(4);
-            canvas.drawCircle(x, y, r, paint);
+            gameView.paint.setStyle(Paint.Style.STROKE);
+            gameView.paint.setColor(Color.WHITE);
+            gameView.paint.setStrokeWidth(4);
+            canvas.drawCircle(x, y, r, gameView.paint);
         } else {
-            paint.setStyle(Paint.Style.FILL);
-            paint.setColor(Color.GRAY);
-            canvas.drawCircle(x, y, r, paint);
+            gameView.paint.setStyle(Paint.Style.FILL);
+            gameView.paint.setColor(Color.GRAY);
+            canvas.drawCircle(x, y, r, gameView.paint);
 
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setColor(Color.WHITE);
-            paint.setStrokeWidth(4);
-            canvas.drawCircle(x, y, r, paint);
+            gameView.paint.setStyle(Paint.Style.STROKE);
+            gameView.paint.setColor(Color.WHITE);
+            gameView.paint.setStrokeWidth(4);
+            canvas.drawCircle(x, y, r, gameView.paint);
         }
+
+        gameView.resetPaint();
     }
 
     public void setDestination(float newX, float newY) {
@@ -181,32 +191,13 @@ public class Player {
         if (lives > 5) lives = 5;
     }
 
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public float getR() {
-        return r;
-    }
-
-    public int getLives() {
-        return lives;
-    }
-
     public boolean isRecovering() {
         return recovering;
     }
 
-    public int getScore() {
-        return score;
-    }
-
     public void addScore(int i) {
-        score += i;
+        visibleScore += i;
+        // score += i;
     }
 
     public void increasePower(int i) {
@@ -219,14 +210,6 @@ public class Player {
                 power = requiredPower[powerLevel];
             }
         }
-    }
-
-    public int getPowerLevel() {
-        return powerLevel;
-    }
-
-    public int getPower() {
-        return power;
     }
 
     public int getRequiredPower() {

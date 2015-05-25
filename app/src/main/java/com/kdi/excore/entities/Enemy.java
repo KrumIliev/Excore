@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.kdi.excore.game.Game;
+import com.kdi.excore.states.PlayState;
+import com.kdi.excore.states.State;
 
 /**
  * Created by Krum Iliev on 5/23/2015.
@@ -17,31 +19,34 @@ public class Enemy extends Entity {
     public static final int TYPE_IMMUNE = 4;
     public static final int TYPE_BOSS = 5;
 
-    private int health;
-    private int type;
-    private int rank;
+    public int health;
+    public int type;
+    public int rank;
 
-    private boolean ready;
-    private boolean dead;
+    public boolean ready;
+    public boolean dead;
 
-    private boolean hit;
-    private long hitTimer;
+    public boolean hit;
+    public long hitTimer;
 
-    private boolean slow;
-    private boolean fast;
+    public boolean slow;
+    public boolean fast;
 
-    private int color;
+    public int color;
 
-    private int maxRank = 4;
+    public int maxRank = 4;
+    private State state;
 
-    public Enemy(Game gameView, int type, int rank) {
+    public Enemy(Game gameView, State state, int type, int rank) {
         this.type = type;
         this.rank = rank;
         this.gameView = gameView;
+        this.state = state;
 
-
-        x = Math.random() * gameView.getWidth() / 2 + gameView.getWidth() / 4;
-        y = -r;
+        if (x == 0) {
+            x = Math.random() * gameView.width / 2 + gameView.width / 4;
+            y = -r;
+        }
 
         setBaseStats();
         setRank();
@@ -56,6 +61,13 @@ public class Enemy extends Entity {
         dead = false;
         hit = false;
         hitTimer = 0;
+    }
+
+    public Enemy(Game gameView, State state, int type, int rank, double x, double y) {
+        this(gameView, state, type, rank);
+
+        this.x = x;
+        this.y = y;
     }
 
     @Override
@@ -76,7 +88,7 @@ public class Enemy extends Entity {
         }
 
         if (!ready) {
-            if (x > r && x < gameView.getWidth() - r && y > r && y < gameView.getHeight() - r)
+            if (x > r && x < gameView.width - r && y > r && y < gameView.height - r)
                 ready = true;
         }
 
@@ -98,23 +110,22 @@ public class Enemy extends Entity {
 
     @Override
     public void draw(Canvas canvas) {
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-
         if (hit) {
-            paint.setStyle(Paint.Style.FILL);
-            paint.setColor(Color.WHITE);
-            canvas.drawCircle((float) x, (float) y, (float) r, paint);
+            gameView.paint.setStyle(Paint.Style.FILL);
+            gameView.paint.setColor(Color.WHITE);
+            canvas.drawCircle((float) x, (float) y, (float) r, gameView.paint);
         } else {
-            paint.setStyle(Paint.Style.FILL);
-            paint.setColor(color);
-            canvas.drawCircle((float) x, (float) y, (float) r, paint);
+            gameView.paint.setStyle(Paint.Style.FILL);
+            gameView.paint.setColor(color);
+            canvas.drawCircle((float) x, (float) y, (float) r, gameView.paint);
 
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setColor(Color.WHITE);
-            paint.setStrokeWidth(4);
-            canvas.drawCircle((float) x, (float) y, (float) r, paint);
+            gameView.paint.setStyle(Paint.Style.STROKE);
+            gameView.paint.setColor(Color.WHITE);
+            gameView.paint.setStrokeWidth(4);
+            canvas.drawCircle((float) x, (float) y, (float) r, gameView.paint);
         }
+
+        gameView.resetPaint();
     }
 
     public void hit() {
@@ -133,7 +144,7 @@ public class Enemy extends Entity {
             int amount = 3;
 
             for (int i = 0; i < amount; i++) {
-                Enemy enemy = new Enemy(gameView, getType(), getRank() - 1);
+                Enemy enemy = new Enemy(gameView, state, type, rank - 1);
                 enemy.x = this.x;
                 enemy.y = this.y;
                 double angle;
@@ -142,29 +153,9 @@ public class Enemy extends Entity {
                 else
                     angle = Math.random() * 360;
                 enemy.rad = Math.toRadians(angle);
-                gameView.addEnemy(enemy);
+                ((PlayState) state).enemies.add(enemy);
             }
         }
-    }
-
-    public boolean isDead() {
-        return dead;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public void setSlow(boolean slow) {
-        this.slow = slow;
-    }
-
-    public void setFast(boolean fast) {
-        this.fast = fast;
     }
 
     private void setBaseStats() {
