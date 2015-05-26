@@ -22,10 +22,4 @@ public class ExcoreActivity extends Activity {
         game = new Game(this);
         setContentView(game);
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        game.dispose();
-    }
 }

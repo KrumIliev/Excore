@@ -9,8 +9,9 @@ import java.util.Random;
  */
 public class Utils {
 
-    public static int getRandomColor() {
+    public static int getRandomColor(boolean transparent) {
         Random rnd = new Random();
-        return Color.argb(255, rnd.nextInt(150), rnd.nextInt(150), rnd.nextInt(150));
+        int alpha = transparent ? 210 : 255;
+        return Color.argb(alpha, rnd.nextInt(150), rnd.nextInt(150), rnd.nextInt(150));
     }
 }

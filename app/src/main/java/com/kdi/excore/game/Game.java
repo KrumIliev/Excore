@@ -40,7 +40,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         thread = new GameThread(this);
         setFocusable(true);
 
-        background = Utils.getRandomColor();
+        background = Utils.getRandomColor(false);
 
         tf = Typeface.createFromAsset(getContext().getAssets(), "font.ttf");
         audioPlayer = new AudioPlayer(getContext());
@@ -57,7 +57,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         width = getWidth();
         height = getHeight();
 
-        stateManager.push(new MenuState(stateManager, this));
+        stateManager.push(new MenuState(stateManager, this, Utils.getRandomColor(false)));
 
         thread.setRunning(true);
         thread.start();

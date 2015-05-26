@@ -13,6 +13,7 @@ import com.kdi.excore.entities.Player;
 import com.kdi.excore.entities.PowerUp;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.utils.Utils;
+import com.kdi.excore.xfx.AudioPlayer;
 
 import java.util.ArrayList;
 
@@ -49,6 +50,8 @@ public class PlayState extends State {
     public boolean pause = false;
     public Rect pauseButton;
 
+    private PauseState pauseState;
+
     public PlayState(StateManager stateManager, Game game, int color) {
         super(stateManager, game);
         background = color;
@@ -68,7 +71,7 @@ public class PlayState extends State {
         enemies = new ArrayList<>();
         explosions = new ArrayList<>();
         powerUps = new ArrayList<>();
-        nextWave = new ColorAnimation(game, Utils.getRandomColor());
+        nextWave = new ColorAnimation(game, Utils.getRandomColor(false));
 
         int pauseWidth = 120;
         int pauseHeight = 40;
@@ -77,6 +80,7 @@ public class PlayState extends State {
         int top = 20;
         int bottom = top + pauseHeight;
         pauseButton = new Rect(left, top, right, bottom);
+        pauseState = new PauseState(game, stateManager);
     }
 
     @Override
@@ -100,6 +104,11 @@ public class PlayState extends State {
             updateExplosions();
             updateSlowDown();
             updateFastEnemies();
+        } else {
+            if (pauseState.update()) {
+                pause = false;
+                pauseState.reset();
+            }
         }
     }
 
@@ -125,7 +134,7 @@ public class PlayState extends State {
             if (remove) {
                 showNextWaveAnimation = false;
                 background = nextWave.color;
-                nextWave.reset(Utils.getRandomColor());
+                nextWave.reset(Utils.getRandomColor(false));
             }
         }
     }
@@ -247,6 +256,7 @@ public class PlayState extends State {
                 if (powerUp.type == PowerUp.TYPE_POWER) player.increasePower(1);
 
                 if (powerUp.type == PowerUp.TYPE_SLOW) {
+                    game.audioPlayer.playSound(AudioPlayer.POWER_UP_SLOW);
                     slowDownTimer = System.nanoTime();
                     fastTimer = 0;
                     for (Enemy enemy : enemies) {
@@ -257,12 +267,14 @@ public class PlayState extends State {
                 }
 
                 if (powerUp.type == PowerUp.TYPE_DESTROY) {
+                    game.audioPlayer.playSound(AudioPlayer.POWER_UP_DESTROY);
                     for (Enemy enemy : enemies)
                         enemy.destroy();
                     //TODO set screen to flash red
                 }
 
                 if (powerUp.type == PowerUp.TYPE_FASTER_ENEMY) {
+                    game.audioPlayer.playSound(AudioPlayer.POWER_UP_FAST);
                     fastTimer = System.nanoTime();
                     slowDownTimer = 0;
                     for (Enemy enemy : enemies) {
@@ -314,6 +326,8 @@ public class PlayState extends State {
         // Explosion up draw
         for (Explosion explosion : explosions)
             explosion.draw(canvas);
+
+        if (pause) pauseState.draw(canvas);
     }
 
     private void drawWaveNumber(Canvas canvas) {
@@ -356,12 +370,12 @@ public class PlayState extends State {
         if (slowDownTimer != 0) {
             game.paint.setStyle(Paint.Style.FILL);
             game.paint.setColor(Color.GREEN);
-            canvas.drawRect(game.width - 150, 50, (float) ((game.width - 50) - 100.0 * slowTimerDiff / slowDownLength), 60, game.paint);
+            canvas.drawRect(game.width - 120, 40, (float) ((game.width - 20) - 100.0 * slowTimerDiff / slowDownLength), 50, game.paint);
 
             game.paint.setStyle(Paint.Style.STROKE);
             game.paint.setColor(Color.WHITE);
             game.paint.setStrokeWidth(2);
-            canvas.drawRect(game.width - 150, 50, game.width - 50, 60, game.paint);
+            canvas.drawRect(game.width - 120, 40, game.width - 20, 50, game.paint);
             game.resetPaint();
         }
     }
@@ -370,12 +384,12 @@ public class PlayState extends State {
         if (fastTimer != 0) {
             game.paint.setStyle(Paint.Style.FILL);
             game.paint.setColor(Color.BLUE);
-            canvas.drawRect(game.width - 150, 50, (float) ((game.width - 50) - 100.0 * fastTimerDiff / fastLength), 60, game.paint);
+            canvas.drawRect(game.width - 120, 40, (float) ((game.width - 20) - 100.0 * fastTimerDiff / fastLength), 50, game.paint);
 
             game.paint.setStyle(Paint.Style.STROKE);
             game.paint.setColor(Color.WHITE);
             game.paint.setStrokeWidth(2);
-            canvas.drawRect(game.width - 150, 50, game.width - 50, 60, game.paint);
+            canvas.drawRect(game.width - 120, 40, game.width - 20, 50, game.paint);
             game.resetPaint();
         }
     }
@@ -383,22 +397,19 @@ public class PlayState extends State {
     private void drawPower(Canvas canvas) {
         game.paint.setStyle(Paint.Style.FILL);
         int color = Color.WHITE;
-        if (player.powerLevel == 1) color = Color.GREEN;
-        if (player.powerLevel == 2) color = Color.BLUE;
-        if (player.powerLevel == 3) color = Color.YELLOW;
         if (player.powerLevel == 4) color = Color.RED;
         game.paint.setColor(color);
         if (player.powerLevel == 4) {
-            canvas.drawRect(game.width - 150, 30, game.width - 50, 40, game.paint);
+            canvas.drawRect(game.width - 120, 20, game.width - 20, 30, game.paint);
         } else {
-            canvas.drawRect(game.width - 150, 30, (float) (game.width - 150 + 100.0 * player.power / player.getRequiredPower()), 40, game.paint);
+            canvas.drawRect(game.width - 120, 20, (float) (game.width - 120 + 100.0 * player.power / player.getRequiredPower()), 30, game.paint);
         }
 
 
         game.paint.setStyle(Paint.Style.STROKE);
         game.paint.setColor(Color.WHITE);
         game.paint.setStrokeWidth(2);
-        canvas.drawRect(game.width - 150, 30, game.width - 50, 40, game.paint);
+        canvas.drawRect(game.width - 120, 20, game.width - 20, 30, game.paint);
         game.resetPaint();
     }
 
@@ -423,7 +434,13 @@ public class PlayState extends State {
 
     @Override
     public void handleInput(float x, float y) {
-        player.setDestination(x, y);
+        if (pause) {
+            pauseState.handleInput(x, y);
+        } else if (pauseButton.contains((int) x, (int) y)) {
+            pause = true;
+        } else {
+            player.setDestination(x, y);
+        }
     }
 
     public void addPowerUp(Enemy enemy) {

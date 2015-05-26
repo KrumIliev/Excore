@@ -18,34 +18,29 @@ import java.util.Random;
  */
 public class MenuState extends State {
 
-    private int buttonWidth;
-    private int buttonHeight;
     private int background;
 
     private Rect playButton, optionButton, exitButton, helpButton, rankButton;
-    private ColorAnimation animPlay, animRank, animOptions, animHelp, animExit;
-    private boolean play, rank, options, help, exit;
+    private ColorAnimation anim;
+    private boolean showAnimation;
 
     public ArrayList<Enemy> objects;
+    private State nextState;
 
-    private Random random;
+    private String strPlay;
+    private String strRank;
+    private String strOptions;
+    private String strHelp;
+    private String strExit;
 
-    public MenuState(StateManager stateManager, Game game) {
+
+    public MenuState(StateManager stateManager, Game game, int color) {
         super(stateManager, game);
 
-        background = Utils.getRandomColor();
-        buttonWidth = game.width / 2;
-        int buttonVerticalSpace = 40;
-        buttonHeight = (game.height - (buttonVerticalSpace * 6)) / 5;
-
-        random = new Random();
-        int randomId = random.nextInt(6);
-
-        animPlay = new ColorAnimation(game, Color.parseColor(getRandomMenuColor(randomId, 1)));
-        animRank = new ColorAnimation(game, Color.parseColor(getRandomMenuColor(randomId, 2)));
-        animOptions = new ColorAnimation(game, Color.parseColor(getRandomMenuColor(randomId, 3)));
-        animHelp = new ColorAnimation(game, Color.parseColor(getRandomMenuColor(randomId, 4)));
-        animExit = new ColorAnimation(game, Color.parseColor(getRandomMenuColor(randomId, 5)));
+        background = color;
+        int buttonWidth = game.width / 2 + 100;
+        int buttonVerticalSpace = 50;
+        int buttonHeight = (game.height - (buttonVerticalSpace * 6)) / 5;
 
         int left = (game.width - buttonWidth) / 2;
         int right = game.width - left;
@@ -69,17 +64,37 @@ public class MenuState extends State {
         bottom = top + buttonHeight;
         exitButton = new Rect(left, top, right, bottom);
 
+        anim = new ColorAnimation(game, Utils.getRandomColor(false));
+
+        strPlay = "- P l a y -";
+        strRank = "- R a n k -";
+        strOptions = "- O p t i o n s -";
+        strHelp = "- H e l p -";
+        strExit = "- E x i t -";
+
         initObjects();
     }
 
     @Override
     public void handleInput(float x, float y) {
-        if (play || rank || options || help || exit) return;
-        if (playButton.contains((int) x, (int) y)) play = true;
-        if (rankButton.contains((int) x, (int) y)) rank = true;
-        if (optionButton.contains((int) x, (int) y)) options = true;
-        if (helpButton.contains((int) x, (int) y)) help = true;
-        if (exitButton.contains((int) x, (int) y)) exit = true;
+        if (showAnimation) return;
+        showAnimation = true;
+
+        if (playButton.contains((int) x, (int) y))
+            nextState = new PlayState(stateManager, game, anim.color);
+
+        if (rankButton.contains((int) x, (int) y)) {
+
+        }
+        if (optionButton.contains((int) x, (int) y)) {
+
+        }
+        if (helpButton.contains((int) x, (int) y)) {
+
+        }
+        if (exitButton.contains((int) x, (int) y)) {
+
+        }
     }
 
     @Override
@@ -87,43 +102,11 @@ public class MenuState extends State {
         for (Enemy enemy : objects)
             enemy.update();
 
-        if (play) {
-            boolean remove = animPlay.update();
+        if (showAnimation) {
+            boolean remove = anim.update();
             if (remove) {
-                play = false;
-                stateManager.setState(new PlayState(stateManager, game, animPlay.color));
-            }
-        }
-
-        if (rank) {
-            boolean remove = animRank.update();
-            if (remove) {
-                rank = false;
-                //TODO
-            }
-        }
-
-        if (options) {
-            boolean remove = animOptions.update();
-            if (remove) {
-                options = false;
-                //TODO
-            }
-        }
-
-        if (help) {
-            boolean remove = animHelp.update();
-            if (remove) {
-                help = false;
-                //TODO
-            }
-        }
-
-        if (exit) {
-            boolean remove = animExit.update();
-            if (remove) {
-                exit = false;
-                //TODO
+                showAnimation = false;
+                stateManager.setState(nextState);
             }
         }
     }
@@ -135,27 +118,19 @@ public class MenuState extends State {
         for (Enemy enemy : objects)
             enemy.draw(canvas);
 
-        drawButton(canvas, playButton, animPlay, "- P l a y -");
-        drawButton(canvas, rankButton, animRank, "- R a n k -");
-        drawButton(canvas, optionButton, animOptions, "- O p t i o n s -");
-        drawButton(canvas, helpButton, animHelp, "- H e l p -");
-        drawButton(canvas, exitButton, animExit, "- E x i t -");
+        drawButton(canvas, playButton, strPlay);
+        drawButton(canvas, rankButton, strRank);
+        drawButton(canvas, optionButton, strOptions);
+        drawButton(canvas, helpButton, strHelp);
+        drawButton(canvas, exitButton, strExit);
 
-        if (play) animPlay.draw(canvas);
-        if (rank) animRank.draw(canvas);
-        if (options) animOptions.draw(canvas);
-        if (help) animHelp.draw(canvas);
-        if (exit) animExit.draw(canvas);
+        if (showAnimation) anim.draw(canvas);
     }
 
-    private void drawButton(Canvas canvas, Rect button, ColorAnimation anim, String text) {
-        game.paint.setStyle(Paint.Style.FILL);
-        game.paint.setColor(anim.color);
-        canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
-
+    private void drawButton(Canvas canvas, Rect button, String text) {
         game.paint.setStyle(Paint.Style.STROKE);
         game.paint.setColor(Color.WHITE);
-        game.paint.setStrokeWidth(3);
+        game.paint.setStrokeWidth(2);
         canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
 
         game.resetPaint();
@@ -164,80 +139,25 @@ public class MenuState extends State {
         game.paint.setTextSize(40);
         game.paint.setColor(Color.WHITE);
         game.paint.setTextAlign(Paint.Align.CENTER);
-        int centerX = button.right - button.left;
         int centerY = ((button.bottom - button.top) / 2) + button.top;
         Rect bounds = new Rect();
         game.paint.getTextBounds(text, 0, text.length(), bounds);
-        canvas.drawText(text, centerX, centerY - bounds.exactCenterY(), game.paint);
+        canvas.drawText(text, game.width / 2, centerY - bounds.exactCenterY(), game.paint);
 
         game.resetPaint();
     }
 
     private void initObjects() {
+        Random random = new Random();
         objects = new ArrayList<>();
         objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
         objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
         objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
         objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 2, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 2, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 2, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 3, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 3, 1, random.nextInt(game.width), random.nextInt(game.height)));
-    }
-
-    private String getRandomMenuColor(int random, int id) {
-        switch (random) {
-            case 0:
-                if (id == 1) return "#1b5e20";
-                if (id == 2) return "#2e7d32";
-                if (id == 3) return "#388e3c";
-                if (id == 4) return "#43a047";
-                if (id == 5) return "#4caf50";
-                break;
-            case 1:
-                if (id == 1) return "#4a148c";
-                if (id == 2) return "#6a1b9a";
-                if (id == 3) return "#7b1fa2";
-                if (id == 4) return "#8e24aa";
-                if (id == 5) return "#9c27b0";
-                break;
-            case 2:
-                if (id == 1) return "#b71c1c";
-                if (id == 2) return "#c62828";
-                if (id == 3) return "#d32f2f";
-                if (id == 4) return "#e53935";
-                if (id == 5) return "#f44336";
-                break;
-            case 3:
-                if (id == 1) return "#0d47a1";
-                if (id == 2) return "#1565c0";
-                if (id == 3) return "#1976d2";
-                if (id == 4) return "#1e88e5";
-                if (id == 5) return "#2196f3";
-                break;
-            case 4:
-                if (id == 1) return "#bf360c";
-                if (id == 2) return "#d84315";
-                if (id == 3) return "#e64a19";
-                if (id == 4) return "#f4511e";
-                if (id == 5) return "#ff5722";
-                break;
-            case 5:
-                if (id == 1) return "#212121";
-                if (id == 2) return "#424242";
-                if (id == 3) return "#616161";
-                if (id == 4) return "#757575";
-                if (id == 5) return "#9e9e9e";
-                break;
-            case 6:
-                if (id == 1) return "#880e4f";
-                if (id == 2) return "#ad1457";
-                if (id == 3) return "#c2185b";
-                if (id == 4) return "#d81b60";
-                if (id == 5) return "#e91e63";
-                break;
-        }
-        return "#000000";
+        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
     }
 }

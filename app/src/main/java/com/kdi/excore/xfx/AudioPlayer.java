@@ -19,6 +19,9 @@ public class AudioPlayer {
     public static final int SOUND_WEAPON_2 = 2;
     public static final int SOUND_WEAPON_3 = 3;
     public static final int SOUND_WEAPON_4 = 4;
+    public static final int POWER_UP_DESTROY = 5;
+    public static final int POWER_UP_SLOW = 6;
+    public static final int POWER_UP_FAST = 7;
 
 
     private Context context;
@@ -48,6 +51,9 @@ public class AudioPlayer {
         soundIds[SOUND_WEAPON_2] = soundPool.load(context, R.raw.shoot_2, 1);
         soundIds[SOUND_WEAPON_3] = soundPool.load(context, R.raw.shoot_3, 1);
         soundIds[SOUND_WEAPON_4] = soundPool.load(context, R.raw.shoot_4, 1);
+        soundIds[POWER_UP_DESTROY] = soundPool.load(context, R.raw.p_destroy, 1);
+        soundIds[POWER_UP_SLOW] = soundPool.load(context, R.raw.p_slow, 1);
+        soundIds[POWER_UP_FAST] = soundPool.load(context, R.raw.p_fast, 1);
     }
 
     public void playMusic(int id) {
