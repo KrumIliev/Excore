@@ -8,6 +8,7 @@ import android.media.SoundPool;
 import android.os.Build;
 
 import com.kdi.excore.R;
+import com.kdi.excore.utils.ExcoreSharedPreferences;
 
 /**
  * Created by Krum Iliev on 5/24/2015.
@@ -30,8 +31,11 @@ public class AudioPlayer {
     private SoundPool soundPool; // for playing short audio files like effects
     private int soundIds[];
 
+    private ExcoreSharedPreferences preferences;
+
     public AudioPlayer(Context context) {
         this.context = context;
+        this.preferences = new ExcoreSharedPreferences(context);
 
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
             SoundPool.Builder poolBuilder = new SoundPool.Builder();
@@ -57,10 +61,12 @@ public class AudioPlayer {
     }
 
     public void playMusic(int id) {
-        mediaPlayer = MediaPlayer.create(context, id);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(100, 100);
-        mediaPlayer.start();
+        if (preferences.getSetting(ExcoreSharedPreferences.KEY_MUSIC)) {
+            mediaPlayer = MediaPlayer.create(context, id);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.setVolume(100, 100);
+            mediaPlayer.start();
+        }
     }
 
     public void stopMusic() {
@@ -68,13 +74,12 @@ public class AudioPlayer {
     }
 
     public void playSound(int sound) {
-        soundPool.play(soundIds[sound], 1, 1, 1, 0, 1f);
+        if (preferences.getSetting(ExcoreSharedPreferences.KEY_SOUND))
+            soundPool.play(soundIds[sound], 1, 1, 1, 0, 1f);
     }
 
     public void dispose() {
         if (mediaPlayer != null) mediaPlayer.release();
         if (soundPool != null) soundPool.release();
     }
-
-
 }

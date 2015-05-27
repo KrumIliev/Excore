@@ -90,9 +90,9 @@ public class MenuState extends State {
         if (rankButton.contains((int) x, (int) y)) {
 
         }
-        if (optionButton.contains((int) x, (int) y)) {
+        if (optionButton.contains((int) x, (int) y))
+            nextState = new OptionsState(stateManager, game, anim.color);
 
-        }
         if (helpButton.contains((int) x, (int) y)) {
 
         }
