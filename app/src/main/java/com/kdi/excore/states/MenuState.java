@@ -33,6 +33,7 @@ public class MenuState extends State {
     private String strHelp;
     private String strExit;
 
+    private int alpha;
 
     public MenuState(StateManager stateManager, Game game, int color) {
         super(stateManager, game);
@@ -73,6 +74,8 @@ public class MenuState extends State {
         strExit = "- E x i t -";
 
         initObjects();
+
+        alpha = 0;
     }
 
     @Override
@@ -102,6 +105,9 @@ public class MenuState extends State {
         for (Enemy enemy : objects)
             enemy.update();
 
+        alpha += 5;
+        if (alpha > 255) alpha = 255;
+
         if (showAnimation) {
             boolean remove = anim.update();
             if (remove) {
@@ -129,7 +135,7 @@ public class MenuState extends State {
 
     private void drawButton(Canvas canvas, Rect button, String text) {
         game.paint.setStyle(Paint.Style.STROKE);
-        game.paint.setColor(Color.WHITE);
+        game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setStrokeWidth(2);
         canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
 
@@ -137,7 +143,7 @@ public class MenuState extends State {
 
         game.paint.setTypeface(game.tf);
         game.paint.setTextSize(40);
-        game.paint.setColor(Color.WHITE);
+        game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setTextAlign(Paint.Align.CENTER);
         int centerY = ((button.bottom - button.top) / 2) + button.top;
         Rect bounds = new Rect();
@@ -150,14 +156,14 @@ public class MenuState extends State {
     private void initObjects() {
         Random random = new Random();
         objects = new ArrayList<>();
-        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, random.nextInt(game.width), random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, game.width + 20, random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, game.width + 20, random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, game.width + 20, random.nextInt(game.height)));
+        objects.add(new Enemy(game, this, 1, 1, game.width + 20, random.nextInt(game.height)));
     }
 }
