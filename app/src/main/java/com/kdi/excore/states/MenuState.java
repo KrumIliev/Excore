@@ -18,8 +18,6 @@ import java.util.Random;
  */
 public class MenuState extends State {
 
-    private int background;
-
     private Rect playButton, optionButton, exitButton, helpButton, rankButton;
     private ColorAnimation anim;
     private boolean showAnimation;

@@ -11,6 +11,7 @@ public abstract class State {
 
     protected StateManager stateManager;
     protected Game game;
+    protected int background;
 
     public State(StateManager stateManager, Game game) {
         this.stateManager = stateManager;

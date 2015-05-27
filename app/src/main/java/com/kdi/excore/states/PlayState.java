@@ -45,8 +45,6 @@ public class PlayState extends State {
     private long fastTimerDiff;
     private int fastLength = 6000;
 
-    public int background;
-
     public boolean pause = false;
     public Rect pauseButton;
 

@@ -11,6 +11,7 @@ import android.view.SurfaceView;
 import com.kdi.excore.R;
 import com.kdi.excore.states.MenuState;
 import com.kdi.excore.states.StateManager;
+import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.utils.Utils;
 import com.kdi.excore.xfx.AudioPlayer;
 
@@ -18,8 +19,6 @@ import com.kdi.excore.xfx.AudioPlayer;
  * Created by Krum Iliev on 5/22/2015.
  */
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
-
-    private static final String LOG_TAG = Game.class.getSimpleName();
 
     public int width, height;
 
@@ -33,6 +32,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public Paint paint;
 
     private StateManager stateManager;
+    public ExcoreSharedPreferences preferences;
 
     public Game(Context context) {
         super(context);
@@ -40,6 +40,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         thread = new GameThread(this);
         setFocusable(true);
 
+        preferences = new ExcoreSharedPreferences(context);
         background = Utils.getRandomColor(false);
 
         tf = Typeface.createFromAsset(getContext().getAssets(), "font.ttf");
