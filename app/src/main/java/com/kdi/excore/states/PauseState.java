@@ -132,7 +132,6 @@ public class PauseState {
             drawButton(canvas, bounds);
             */
 
-
         if (showExitAnim) exitAnim.draw(canvas);
     }
 

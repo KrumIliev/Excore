@@ -39,6 +39,13 @@ public class MenuState extends State {
         super(stateManager, game);
 
         background = color;
+        alpha = 0;
+
+        initButtons();
+        initObjects();
+    }
+
+    private void initButtons() {
         int buttonWidth = game.width / 2 + 100;
         int buttonVerticalSpace = 50;
         int buttonHeight = (game.height - (buttonVerticalSpace * 6)) / 5;
@@ -72,10 +79,6 @@ public class MenuState extends State {
         strOptions = "- O p t i o n s -";
         strHelp = "- H e l p -";
         strExit = "- E x i t -";
-
-        initObjects();
-
-        alpha = 0;
     }
 
     @Override
@@ -156,14 +159,12 @@ public class MenuState extends State {
     private void initObjects() {
         Random random = new Random();
         objects = new ArrayList<>();
-        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, game.width + 20, random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, game.width + 20, random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, game.width + 20, random.nextInt(game.height)));
-        objects.add(new Enemy(game, this, 1, 1, game.width + 20, random.nextInt(game.height)));
+        for (int i = 0; i < 9; i++) {
+            if (i % 2 == 0) {
+                objects.add(new Enemy(game, this, 1, 1, -20, random.nextInt(game.height)));
+            } else {
+                objects.add(new Enemy(game, this, 1, 1, game.width + 20, random.nextInt(game.height)));
+            }
+        }
     }
 }
