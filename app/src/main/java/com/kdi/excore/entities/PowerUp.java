@@ -33,12 +33,13 @@ public class PowerUp extends Entity {
         r = 12;
 
         if (type == TYPE_LIFE) color = Color.MAGENTA;
-        if (type == TYPE_POWER) color = Color.YELLOW;
+        if (type == TYPE_POWER) color = Color.CYAN;
         if (type == TYPE_SLOW) color = Color.GREEN;
         if (type == TYPE_DESTROY) color = Color.RED;
         if (type == TYPE_UPDATE_ENEMY) color = Color.BLACK;
         if (type == TYPE_FASTER_ENEMY) color = Color.BLUE;
-        if (type == TYPE_IMMORTALITY) color = Color.CYAN;
+        if (type == TYPE_IMMORTALITY) color = Color.YELLOW;
+        if (type == TYPE_DOUBLE_SCORE) color = Color.GRAY;
     }
 
     @Override

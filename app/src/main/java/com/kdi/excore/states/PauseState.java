@@ -36,6 +36,8 @@ public class PauseState {
     private ColorAnimation exitAnim;
     private boolean showExitAnim;
 
+    private int alpha;
+
     public PauseState(Game game, StateManager stateManager) {
         this.game = game;
         this.stateManager = stateManager;
@@ -53,6 +55,8 @@ public class PauseState {
         expand = true;
 
         exitAnim = new ColorAnimation(game, Utils.getRandomColor(false));
+
+        alpha = 0;
 
         initPause();
     }
@@ -93,7 +97,16 @@ public class PauseState {
             if (r <= 1) return true;
         } else {
             if (expand) r += 5;
+            if (r > maxR / 2) {
+                alpha += 3;
+                if (alpha > 255) alpha = 255;
+            }
             if (r >= maxR) expand = false;
+        }
+
+        if (close) {
+            alpha -= 7;
+            if (alpha < 0) alpha = 0;
         }
 
         if (showExitAnim) {
@@ -109,16 +122,15 @@ public class PauseState {
 
     public void draw(Canvas canvas) {
         drawBackground(canvas);
-        if (!expand && !close) {
-            drawPause(canvas);
-            drawButton(canvas, buttonResume, resumeString);
-            drawButton(canvas, buttonExit, exitString);
+
+        drawPause(canvas);
+        drawButton(canvas, buttonResume, resumeString);
+        drawButton(canvas, buttonExit, exitString);
 
             /*
             ONLY FOR DEBUG
             drawButton(canvas, bounds);
             */
-        }
 
         if (showExitAnim) exitAnim.draw(canvas);
     }
@@ -138,7 +150,7 @@ public class PauseState {
 
     private void drawButton(Canvas canvas, Rect button, String text) {
         game.paint.setStyle(Paint.Style.STROKE);
-        game.paint.setColor(Color.WHITE);
+        game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setStrokeWidth(2);
         canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
 
@@ -146,7 +158,7 @@ public class PauseState {
 
         game.paint.setTypeface(game.tf);
         game.paint.setTextSize(40);
-        game.paint.setColor(Color.WHITE);
+        game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setTextAlign(Paint.Align.CENTER);
         int centerY = ((button.bottom - button.top) / 2) + button.top;
         Rect bounds = new Rect();
@@ -159,7 +171,7 @@ public class PauseState {
     private void drawPause(Canvas canvas) {
         game.paint.setTypeface(game.tf);
         game.paint.setTextSize(60);
-        game.paint.setColor(Color.WHITE);
+        game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setTextAlign(Paint.Align.CENTER);
         canvas.drawText(pauseString, game.width / 2, bounds.top, game.paint);
         game.resetPaint();
@@ -178,5 +190,6 @@ public class PauseState {
         close = false;
         expand = true;
         color = Utils.getRandomColor(true);
+        alpha = 0;
     }
 }

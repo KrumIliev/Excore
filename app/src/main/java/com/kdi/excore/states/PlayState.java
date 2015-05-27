@@ -4,9 +4,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.Log;
 
-import com.kdi.excore.animations.Explosion;
 import com.kdi.excore.animations.ColorAnimation;
+import com.kdi.excore.animations.Explosion;
 import com.kdi.excore.entities.Bullet;
 import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.entities.Player;
@@ -37,18 +38,31 @@ public class PlayState extends State {
     private boolean waveStart;
     private int waveDelay = 2000;
 
-    private long slowDownTimer;
-    private long slowTimerDiff;
-    private int slowDownLength = 6000;
+    public long slowTimer;
+    private long slowDiff;
+    private int slowTopY;
 
-    private long fastTimer;
-    private long fastTimerDiff;
-    private int fastLength = 6000;
+    public long fastTimer;
+    private long fastDiff;
+    private int fastTopY;
+
+    private long immortalTimer;
+    private long immortalDiff;
+    private int immortalTopY;
+
+    private long scoreTimer;
+    private long scoreDiff;
+    private int scoreTopY;
+    private boolean doubleScore;
+
+    private int powerLength = 6000;
 
     public boolean pause = false;
     public Rect pauseButton;
 
     private PauseState pauseState;
+
+    private int maxEnemiesOnScreen;
 
     public PlayState(StateManager stateManager, Game game, int color) {
         super(stateManager, game);
@@ -79,6 +93,14 @@ public class PlayState extends State {
         int bottom = top + pauseHeight;
         pauseButton = new Rect(left, top, right, bottom);
         pauseState = new PauseState(game, stateManager);
+
+        slowTopY = 0;
+        fastTopY = 0;
+        immortalTopY = 0;
+        scoreTopY = 0;
+        doubleScore = false;
+
+        maxEnemiesOnScreen = 20;
     }
 
     @Override
@@ -102,6 +124,9 @@ public class PlayState extends State {
             updateExplosions();
             updateSlowDown();
             updateFastEnemies();
+            updateImmortal();
+            updateScoreTimer();
+
         } else {
             if (pauseState.update()) {
                 pause = false;
@@ -153,7 +178,14 @@ public class PlayState extends State {
             if (enemy.dead) {
                 addPowerUp(enemy);
 
-                player.addScore((enemy.type + enemy.rank) * 6);
+                int score = (enemy.type + enemy.rank) * 6;
+                if (doubleScore) {
+                    Log.d("PlayState", "Points: " + score);
+                    score *= 2;
+                    Log.d("PlayState", "Points after power up: " + score);
+                }
+                player.addScore(score);
+
                 enemies.remove(i);
                 i--;
 
@@ -186,10 +218,11 @@ public class PlayState extends State {
     }
 
     private void updateSlowDown() {
-        if (slowDownTimer != 0) {
-            slowTimerDiff = (System.nanoTime() - slowDownTimer) / 1000000;
-            if (slowTimerDiff > slowDownLength) {
-                slowDownTimer = 0;
+        if (slowTimer != 0) {
+            slowDiff = (System.nanoTime() - slowTimer) / 1000000;
+            if (slowDiff > powerLength) {
+                slowTimer = 0;
+                slowTopY = 0;
                 for (Enemy enemy : enemies)
                     enemy.slow = false;
             }
@@ -198,12 +231,34 @@ public class PlayState extends State {
 
     private void updateFastEnemies() {
         if (fastTimer != 0) {
-            fastTimerDiff = (System.nanoTime() - fastTimer) / 1000000;
-            if (fastTimerDiff > fastLength) {
+            fastDiff = (System.nanoTime() - fastTimer) / 1000000;
+            if (fastDiff > powerLength) {
                 fastTimer = 0;
+                fastTopY = 0;
                 for (Enemy enemy : enemies)
                     enemy.fast = false;
+            }
+        }
+    }
 
+    private void updateImmortal() {
+        if (immortalTimer != 0) {
+            immortalDiff = (System.nanoTime() - immortalTimer) / 1000000;
+            if (immortalDiff > powerLength) {
+                immortalTimer = 0;
+                immortalTopY = 0;
+                player.immortal = false;
+            }
+        }
+    }
+
+    private void updateScoreTimer() {
+        if (scoreTimer != 0) {
+            scoreDiff = (System.nanoTime() - scoreTimer) / 1000000;
+            if (scoreDiff > powerLength) {
+                scoreTimer = 0;
+                scoreTopY = 0;
+                doubleScore = false;
             }
         }
     }
@@ -229,7 +284,7 @@ public class PlayState extends State {
     }
 
     private void checkPlayerEnemyCollision() {
-        if (!player.isRecovering()) {
+        if (!player.recovering && !player.immortal) {
             for (Enemy enemy : enemies) {
                 double dx = player.x - enemy.x;
                 double dy = player.y - enemy.y;
@@ -255,8 +310,10 @@ public class PlayState extends State {
 
                 if (powerUp.type == PowerUp.TYPE_SLOW) {
                     game.audioPlayer.playSound(AudioPlayer.POWER_UP_SLOW);
-                    slowDownTimer = System.nanoTime();
+                    slowTimer = System.nanoTime();
                     fastTimer = 0;
+                    fastTopY = 0;
+                    if (slowTopY == 0) slowTopY = getFreeTimerPosition();
                     for (Enemy enemy : enemies) {
                         enemy.fast = false;
                         enemy.slow = true;
@@ -274,7 +331,9 @@ public class PlayState extends State {
                 if (powerUp.type == PowerUp.TYPE_FASTER_ENEMY) {
                     game.audioPlayer.playSound(AudioPlayer.POWER_UP_FAST);
                     fastTimer = System.nanoTime();
-                    slowDownTimer = 0;
+                    slowTimer = 0;
+                    slowTopY = 0;
+                    if (fastTopY == 0) fastTopY = getFreeTimerPosition();
                     for (Enemy enemy : enemies) {
                         enemy.slow = false;
                         enemy.fast = true;
@@ -286,10 +345,35 @@ public class PlayState extends State {
                         enemy.increaseRank();
                 }
 
+                if (powerUp.type == PowerUp.TYPE_IMMORTALITY) {
+                    immortalTimer = System.nanoTime();
+                    player.immortal = true;
+                    if (immortalTopY == 0) immortalTopY = getFreeTimerPosition();
+                }
+
+                if (powerUp.type == PowerUp.TYPE_DOUBLE_SCORE) {
+                    scoreTimer = System.nanoTime();
+                    doubleScore = true;
+                    if (scoreTopY == 0) scoreTopY = getFreeTimerPosition();
+                }
+
                 powerUps.remove(i);
                 i--;
             }
         }
+    }
+
+    private int getFreeTimerPosition() {
+        int position = 40;
+        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position)
+            return position;
+        position = 60;
+        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position)
+            return position;
+        position = 80;
+        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position)
+            return position;
+        return 40;
     }
 
     @Override
@@ -301,8 +385,11 @@ public class PlayState extends State {
         drawWaveNumber(canvas);
         drawPlayerLives(canvas);
         drawPlayerScore(canvas);
-        drawSlowTimer(canvas);
-        drawFastTimer(canvas);
+
+        drawTimer(canvas, slowTimer, slowDiff, Color.GREEN, slowTopY);
+        drawTimer(canvas, fastTimer, fastDiff, Color.BLUE, fastTopY);
+        drawTimer(canvas, immortalTimer, immortalDiff, Color.YELLOW, immortalTopY);
+        drawTimer(canvas, scoreTimer, scoreDiff, Color.GRAY, scoreTopY);
         drawPower(canvas);
         drawMenuButton(canvas);
 
@@ -364,30 +451,16 @@ public class PlayState extends State {
         game.resetPaint();
     }
 
-    private void drawSlowTimer(Canvas canvas) {
-        if (slowDownTimer != 0) {
+    private void drawTimer(Canvas canvas, long timer, long diff, int fillColor, int yPosition) {
+        if (timer != 0) {
             game.paint.setStyle(Paint.Style.FILL);
-            game.paint.setColor(Color.GREEN);
-            canvas.drawRect(game.width - 120, 40, (float) ((game.width - 20) - 100.0 * slowTimerDiff / slowDownLength), 50, game.paint);
+            game.paint.setColor(fillColor);
+            canvas.drawRect(game.width - 120, yPosition, (float) ((game.width - 20) - 100.0 * diff / powerLength), yPosition + 10, game.paint);
 
             game.paint.setStyle(Paint.Style.STROKE);
             game.paint.setColor(Color.WHITE);
             game.paint.setStrokeWidth(2);
-            canvas.drawRect(game.width - 120, 40, game.width - 20, 50, game.paint);
-            game.resetPaint();
-        }
-    }
-
-    private void drawFastTimer(Canvas canvas) {
-        if (fastTimer != 0) {
-            game.paint.setStyle(Paint.Style.FILL);
-            game.paint.setColor(Color.BLUE);
-            canvas.drawRect(game.width - 120, 40, (float) ((game.width - 20) - 100.0 * fastTimerDiff / fastLength), 50, game.paint);
-
-            game.paint.setStyle(Paint.Style.STROKE);
-            game.paint.setColor(Color.WHITE);
-            game.paint.setStrokeWidth(2);
-            canvas.drawRect(game.width - 120, 40, game.width - 20, 50, game.paint);
+            canvas.drawRect(game.width - 120, yPosition, game.width - 20, yPosition + 10, game.paint);
             game.resetPaint();
         }
     }
@@ -397,12 +470,7 @@ public class PlayState extends State {
         int color = Color.WHITE;
         if (player.powerLevel == 4) color = Color.RED;
         game.paint.setColor(color);
-        if (player.powerLevel == 4) {
-            canvas.drawRect(game.width - 120, 20, game.width - 20, 30, game.paint);
-        } else {
-            canvas.drawRect(game.width - 120, 20, (float) (game.width - 120 + 100.0 * player.power / player.getRequiredPower()), 30, game.paint);
-        }
-
+        canvas.drawRect(game.width - 120, 20, (float) (game.width - 120 + 100.0 * player.power / player.getRequiredPower()), 30, game.paint);
 
         game.paint.setStyle(Paint.Style.STROKE);
         game.paint.setColor(Color.WHITE);
@@ -447,19 +515,28 @@ public class PlayState extends State {
             powerUps.add(new PowerUp(game, PowerUp.TYPE_LIFE, enemy.x, enemy.y));
         else if (rand < 0.020)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_DESTROY, enemy.x, enemy.y));
+        else if (rand < 0.050)
+            powerUps.add(new PowerUp(game, PowerUp.TYPE_IMMORTALITY, enemy.x, enemy.y));
+        else if (rand < 0.070)
+            powerUps.add(new PowerUp(game, PowerUp.TYPE_DOUBLE_SCORE, enemy.x, enemy.y));
         else if (rand < 0.100)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_FASTER_ENEMY, enemy.x, enemy.y));
-        else if (rand < 0.120)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_POWER, enemy.x, enemy.y));
+        else if (rand < 0.120)
+            powerUps.add(new PowerUp(game, PowerUp.TYPE_FASTER_ENEMY, enemy.x, enemy.y));
         else if (rand < 0.130)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_SLOW, enemy.x, enemy.y));
         else if (rand < 0.140)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_UPDATE_ENEMY, enemy.x, enemy.y));
-
     }
 
     public void addBullet(float angle, double x, double y) {
         bullets.add(new Bullet(game, angle, x, y));
+    }
+
+    public void addEnemy(Enemy enemy) {
+        if (slowTimer != 0) enemy.slow = true;
+        if (fastTimer != 0) enemy.fast = true;
+        enemies.add(enemy);
     }
 
     private void createNewEnemies() {
@@ -467,62 +544,62 @@ public class PlayState extends State {
 
         if (waveNumber == 1) {
             for (int i = 0; i < 4; i++) {
-                enemies.add(new Enemy(game, this, 1, 1));
+                addEnemy(new Enemy(game, this, 1, 1));
             }
         }
 
         if (waveNumber == 2) {
             for (int i = 0; i < 4; i++) {
-                enemies.add(new Enemy(game, this, 1, 1));
+                addEnemy(new Enemy(game, this, 1, 1));
             }
-            enemies.add(new Enemy(game, this, 1, 2));
-            enemies.add(new Enemy(game, this, 1, 2));
+            addEnemy(new Enemy(game, this, 1, 2));
+            addEnemy(new Enemy(game, this, 1, 2));
         }
 
         if (waveNumber == 3) {
-            enemies.add(new Enemy(game, this, 1, 3));
-            enemies.add(new Enemy(game, this, 1, 3));
-            enemies.add(new Enemy(game, this, 1, 4));
+            addEnemy(new Enemy(game, this, 1, 3));
+            addEnemy(new Enemy(game, this, 1, 3));
+            addEnemy(new Enemy(game, this, 1, 4));
         }
 
         if (waveNumber == 4) {
             for (int i = 0; i < 4; i++) {
-                enemies.add(new Enemy(game, this, 2, 1));
+                addEnemy(new Enemy(game, this, 2, 1));
             }
         }
 
         if (waveNumber == 5) {
             for (int i = 0; i < 4; i++) {
-                enemies.add(new Enemy(game, this, 2, 1));
+                addEnemy(new Enemy(game, this, 2, 1));
             }
-            enemies.add(new Enemy(game, this, 2, 2));
-            enemies.add(new Enemy(game, this, 2, 2));
+            addEnemy(new Enemy(game, this, 2, 2));
+            addEnemy(new Enemy(game, this, 2, 2));
         }
 
         if (waveNumber == 6) {
-            enemies.add(new Enemy(game, this, 2, 3));
-            enemies.add(new Enemy(game, this, 2, 3));
-            enemies.add(new Enemy(game, this, 2, 4));
+            addEnemy(new Enemy(game, this, 2, 3));
+            addEnemy(new Enemy(game, this, 2, 3));
+            addEnemy(new Enemy(game, this, 2, 4));
         }
 
         if (waveNumber == 7) {
             for (int i = 0; i < 4; i++) {
-                enemies.add(new Enemy(game, this, 3, 1));
+                addEnemy(new Enemy(game, this, 3, 1));
             }
         }
 
         if (waveNumber == 8) {
             for (int i = 0; i < 4; i++) {
-                enemies.add(new Enemy(game, this, 3, 1));
+                addEnemy(new Enemy(game, this, 3, 1));
             }
-            enemies.add(new Enemy(game, this, 3, 2));
-            enemies.add(new Enemy(game, this, 3, 2));
+            addEnemy(new Enemy(game, this, 3, 2));
+            addEnemy(new Enemy(game, this, 3, 2));
         }
 
         if (waveNumber == 9) {
-            enemies.add(new Enemy(game, this, 3, 3));
-            enemies.add(new Enemy(game, this, 3, 3));
-            enemies.add(new Enemy(game, this, 3, 4));
+            addEnemy(new Enemy(game, this, 3, 3));
+            addEnemy(new Enemy(game, this, 3, 3));
+            addEnemy(new Enemy(game, this, 3, 4));
         }
     }
 }

@@ -153,7 +153,7 @@ public class Enemy extends Entity {
                 else
                     angle = Math.random() * 360;
                 enemy.rad = Math.toRadians(angle);
-                ((PlayState) state).enemies.add(enemy);
+                ((PlayState) state).addEnemy(enemy);
             }
         }
     }

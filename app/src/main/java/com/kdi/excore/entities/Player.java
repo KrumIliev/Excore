@@ -28,14 +28,15 @@ public class Player {
     public boolean recovering;
     public long recoveryTimer;
 
+    public boolean immortal;
+
     public int lives;
     public int score;
     public int visibleScore;
-    public long scoreTimer;
 
     public int powerLevel;
     public int power;
-    public int[] requiredPower = {1, 2, 3, 4, 1};
+    public int[] requiredPower = {1, 2, 3, 4, 3, 0};
 
     private Game gameView;
     private PlayState playState;
@@ -59,6 +60,9 @@ public class Player {
 
         recovering = false;
         recoveryTimer = 0;
+
+        immortal = false;
+
         score = 0;
         visibleScore = 0;
     }
@@ -143,30 +147,38 @@ public class Player {
                 playState.addBullet(275, x + 5, y - 10);
                 playState.addBullet(265, x - 5, y - 10);
             }
+
+            if (powerLevel == 5) {
+                // TODO add sound
+                playState.addBullet(270, x, y - 10);
+                playState.addBullet(275, x + 5, y - 10);
+                playState.addBullet(280, x + 5, y - 10);
+                playState.addBullet(285, x + 5, y - 10);
+                playState.addBullet(265, x - 5, y - 10);
+                playState.addBullet(260, x - 5, y - 10);
+                playState.addBullet(255, x - 5, y - 10);
+                power = 0;
+                powerLevel--;
+            }
         }
     }
 
     public void draw(Canvas canvas) {
 
+        gameView.paint.setStyle(Paint.Style.FILL);
         if (recovering) {
-            gameView.paint.setStyle(Paint.Style.FILL);
             gameView.paint.setColor(Color.RED);
-            canvas.drawCircle(x, y, r, gameView.paint);
-
-            gameView.paint.setStyle(Paint.Style.STROKE);
-            gameView.paint.setColor(Color.WHITE);
-            gameView.paint.setStrokeWidth(4);
-            canvas.drawCircle(x, y, r, gameView.paint);
+        } else if (immortal) {
+            gameView.paint.setColor(Color.YELLOW);
         } else {
-            gameView.paint.setStyle(Paint.Style.FILL);
             gameView.paint.setColor(Color.GRAY);
-            canvas.drawCircle(x, y, r, gameView.paint);
-
-            gameView.paint.setStyle(Paint.Style.STROKE);
-            gameView.paint.setColor(Color.WHITE);
-            gameView.paint.setStrokeWidth(4);
-            canvas.drawCircle(x, y, r, gameView.paint);
         }
+        canvas.drawCircle(x, y, r, gameView.paint);
+
+        gameView.paint.setStyle(Paint.Style.STROKE);
+        gameView.paint.setColor(Color.WHITE);
+        gameView.paint.setStrokeWidth(4);
+        canvas.drawCircle(x, y, r, gameView.paint);
 
         gameView.resetPaint();
     }
@@ -182,8 +194,11 @@ public class Player {
 
     public void loseLife() {
         lives--;
+        if (lives < 0) lives = 0; //TODO end game
         recovering = true;
         recoveryTimer = System.nanoTime();
+        //TODO set power level for more difficulty
+        //power = 0;
     }
 
     public void gainLife() {
@@ -191,13 +206,8 @@ public class Player {
         if (lives > 5) lives = 5;
     }
 
-    public boolean isRecovering() {
-        return recovering;
-    }
-
     public void addScore(int i) {
         visibleScore += i;
-        // score += i;
     }
 
     public void increasePower(int i) {
