@@ -148,7 +148,7 @@ public class Enemy extends Entity {
     }
 
     public void destroy() {
-        if (type != TYPE_IMMUNE) dead = true;
+        if (type != TYPE_IMMUNE && !boss) dead = true;
     }
 
     public void explode() {
