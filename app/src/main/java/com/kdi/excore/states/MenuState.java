@@ -82,20 +82,26 @@ public class MenuState extends State {
     @Override
     public void handleInput(float x, float y) {
         if (showAnimation) return;
-        showAnimation = true;
 
-        if (playButton.contains((int) x, (int) y))
+        if (playButton.contains((int) x, (int) y)) {
             nextState = new PlayState(stateManager, game, anim.color);
+            showAnimation = true;
+        }
 
         if (rankButton.contains((int) x, (int) y)) {
 
         }
-        if (optionButton.contains((int) x, (int) y))
+
+        if (optionButton.contains((int) x, (int) y)) {
             nextState = new OptionsState(stateManager, game, anim.color);
+            showAnimation = true;
+        }
+
 
         if (helpButton.contains((int) x, (int) y)) {
 
         }
+
         if (exitButton.contains((int) x, (int) y)) {
 
         }

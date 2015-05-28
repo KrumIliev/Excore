@@ -12,7 +12,9 @@ import com.kdi.excore.entities.Bullet;
 import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.entities.Player;
 import com.kdi.excore.entities.PowerUp;
+import com.kdi.excore.entities.Subtitle;
 import com.kdi.excore.game.Game;
+import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.utils.Utils;
 import com.kdi.excore.xfx.AudioPlayer;
 
@@ -28,6 +30,7 @@ public class PlayState extends State {
     public ArrayList<Enemy> enemies;
     private ArrayList<Explosion> explosions;
     private ArrayList<PowerUp> powerUps;
+    private ArrayList<Subtitle> subtitles;
 
     private boolean showNextWaveAnimation;
     private ColorAnimation nextWave;
@@ -83,6 +86,7 @@ public class PlayState extends State {
         enemies = new ArrayList<>();
         explosions = new ArrayList<>();
         powerUps = new ArrayList<>();
+        subtitles = new ArrayList<>();
         nextWave = new ColorAnimation(game, Utils.getRandomColor(false));
 
         int pauseWidth = 120;
@@ -126,6 +130,7 @@ public class PlayState extends State {
             updateFastEnemies();
             updateImmortal();
             updateScoreTimer();
+            updateSubtitles();
 
         } else {
             if (pauseState.update()) {
@@ -212,6 +217,16 @@ public class PlayState extends State {
             boolean remove = explosions.get(i).update();
             if (remove) {
                 explosions.remove(i);
+                i--;
+            }
+        }
+    }
+
+    private void updateSubtitles() {
+        for (int i = 0; i < subtitles.size(); i++) {
+            boolean remove = subtitles.get(i).update();
+            if (remove) {
+                subtitles.remove(i);
                 i--;
             }
         }
@@ -304,6 +319,9 @@ public class PlayState extends State {
             double dist = Math.sqrt(dx * dx + dy * dy);
 
             if (dist < player.r + powerUp.r) {
+
+                if (game.preferences.getSetting(ExcoreSharedPreferences.KEY_SUBS))
+                    subtitles.add(new Subtitle(game, powerUp.text));
 
                 if (powerUp.type == PowerUp.TYPE_LIFE) player.gainLife();
                 if (powerUp.type == PowerUp.TYPE_POWER) player.increasePower(1);
@@ -411,6 +429,9 @@ public class PlayState extends State {
         // Explosion up draw
         for (Explosion explosion : explosions)
             explosion.draw(canvas);
+
+        for (Subtitle subtitle : subtitles)
+            subtitle.draw(canvas);
 
         if (pause) pauseState.draw(canvas);
     }

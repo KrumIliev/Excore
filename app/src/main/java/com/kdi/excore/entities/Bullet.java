@@ -12,7 +12,7 @@ import com.kdi.excore.game.Game;
 public class Bullet extends Entity {
 
     public Bullet(Game view, float angle, double x, double y) {
-        gameView = view;
+        game = view;
 
         this.x = x;
         this.y = y;
@@ -30,7 +30,7 @@ public class Bullet extends Entity {
         x += dx;
         y += dy;
 
-        if (x < -r || x > gameView.getWidth() + r || y < -r || y > gameView.getHeight() + r)
+        if (x < -r || x > game.getWidth() + r || y < -r || y > game.getHeight() + r)
             return true;
 
         return false;
@@ -38,10 +38,10 @@ public class Bullet extends Entity {
 
     @Override
     public void draw(Canvas canvas) {
-        gameView.paint.setStyle(Paint.Style.FILL);
-        gameView.paint.setColor(Color.WHITE);
-        canvas.drawCircle((float) x, (float) y, (float) r, gameView.paint);
+        game.paint.setStyle(Paint.Style.FILL);
+        game.paint.setColor(Color.WHITE);
+        canvas.drawCircle((float) x, (float) y, (float) r, game.paint);
 
-        gameView.resetPaint();
+        game.resetPaint();
     }
 }

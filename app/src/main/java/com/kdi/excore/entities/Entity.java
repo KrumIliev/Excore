@@ -18,7 +18,7 @@ public abstract class Entity {
     public double rad;
     public double speed;
 
-    protected Game gameView;
+    protected Game game;
 
     public abstract boolean update();
 

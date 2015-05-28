@@ -40,7 +40,7 @@ public class Enemy extends Entity {
     public Enemy(Game gameView, State state, int type, int rank) {
         this.type = type;
         this.rank = rank;
-        this.gameView = gameView;
+        this.game = gameView;
         this.state = state;
 
         if (x == 0) {
@@ -88,14 +88,14 @@ public class Enemy extends Entity {
         }
 
         if (!ready) {
-            if (x > r && x < gameView.width - r && y > r && y < gameView.height - r)
+            if (x > r && x < game.width - r && y > r && y < game.height - r)
                 ready = true;
         }
 
         if (x < r && dx < 0) dx = -dx;
         if (y < r && dy < 0) dy = -dy;
-        if (x > gameView.getWidth() - r && dx > 0) dx = -dx;
-        if (y > gameView.getHeight() - r && dy > 0) dy = -dy;
+        if (x > game.getWidth() - r && dx > 0) dx = -dx;
+        if (y > game.getHeight() - r && dy > 0) dy = -dy;
 
         if (hit) {
             long elapsed = (System.nanoTime() - hitTimer) / 1000000;
@@ -111,21 +111,21 @@ public class Enemy extends Entity {
     @Override
     public void draw(Canvas canvas) {
         if (hit) {
-            gameView.paint.setStyle(Paint.Style.FILL);
-            gameView.paint.setColor(Color.WHITE);
-            canvas.drawCircle((float) x, (float) y, (float) r, gameView.paint);
+            game.paint.setStyle(Paint.Style.FILL);
+            game.paint.setColor(Color.WHITE);
+            canvas.drawCircle((float) x, (float) y, (float) r, game.paint);
         } else {
-            gameView.paint.setStyle(Paint.Style.FILL);
-            gameView.paint.setColor(color);
-            canvas.drawCircle((float) x, (float) y, (float) r, gameView.paint);
+            game.paint.setStyle(Paint.Style.FILL);
+            game.paint.setColor(color);
+            canvas.drawCircle((float) x, (float) y, (float) r, game.paint);
 
-            gameView.paint.setStyle(Paint.Style.STROKE);
-            gameView.paint.setColor(Color.WHITE);
-            gameView.paint.setStrokeWidth(4);
-            canvas.drawCircle((float) x, (float) y, (float) r, gameView.paint);
+            game.paint.setStyle(Paint.Style.STROKE);
+            game.paint.setColor(Color.WHITE);
+            game.paint.setStrokeWidth(4);
+            canvas.drawCircle((float) x, (float) y, (float) r, game.paint);
         }
 
-        gameView.resetPaint();
+        game.resetPaint();
     }
 
     public void hit() {
@@ -144,7 +144,7 @@ public class Enemy extends Entity {
             int amount = 3;
 
             for (int i = 0; i < amount; i++) {
-                Enemy enemy = new Enemy(gameView, state, type, rank - 1);
+                Enemy enemy = new Enemy(game, state, type, rank - 1);
                 enemy.x = this.x;
                 enemy.y = this.y;
                 double angle;

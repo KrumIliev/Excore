@@ -20,46 +20,70 @@ public class PowerUp extends Entity {
     public static final int TYPE_IMMORTALITY = 8;
     public static final int TYPE_DOUBLE_SCORE = 9;
 
-
     public int type;
     private int color;
+    public String text;
 
     public PowerUp(Game gameView, int type, double x, double y) {
-        this.gameView = gameView;
+        this.game = gameView;
         this.type = type;
         this.x = x;
         this.y = y;
 
         r = 12;
 
-        if (type == TYPE_LIFE) color = Color.MAGENTA;
-        if (type == TYPE_POWER) color = Color.CYAN;
-        if (type == TYPE_SLOW) color = Color.GREEN;
-        if (type == TYPE_DESTROY) color = Color.RED;
-        if (type == TYPE_UPDATE_ENEMY) color = Color.BLACK;
-        if (type == TYPE_FASTER_ENEMY) color = Color.BLUE;
-        if (type == TYPE_IMMORTALITY) color = Color.YELLOW;
-        if (type == TYPE_DOUBLE_SCORE) color = Color.GRAY;
+        if (type == TYPE_LIFE) {
+            color = Color.MAGENTA;
+            text = "+ 1   L i f e";
+        }
+        if (type == TYPE_POWER) {
+            color = Color.CYAN;
+            text = "+ 1   W e a p o n   P o w e r";
+        }
+        if (type == TYPE_SLOW) {
+            color = Color.GREEN;
+            text = "E n e m i e s   s p e e d   d o w n";
+        }
+        if (type == TYPE_DESTROY) {
+            color = Color.RED;
+            text = "K i l l   a l l !";
+        }
+        if (type == TYPE_UPDATE_ENEMY) {
+            color = Color.BLACK;
+            text = "E n e m i e s    u p d a t e";
+        }
+        if (type == TYPE_FASTER_ENEMY) {
+            color = Color.BLUE;
+            text = "E n e m i e s   s p e e d   u p";
+        }
+        if (type == TYPE_IMMORTALITY) {
+            color = Color.YELLOW;
+            text = "G o d   m o d e !";
+        }
+        if (type == TYPE_DOUBLE_SCORE) {
+            color = Color.GRAY;
+            text = "S c o r e   x 2";
+        }
     }
 
     @Override
     public boolean update() {
         y += 2;
-        if (y > gameView.getHeight() + r) return true;
+        if (y > game.getHeight() + r) return true;
         return false;
     }
 
     @Override
     public void draw(Canvas canvas) {
-        gameView.paint.setStyle(Paint.Style.FILL);
-        gameView.paint.setColor(color);
-        canvas.drawRect((float) (x - r / 2), (float) (y - r / 2), (float) (x + r / 2), (float) (y + r / 2), gameView.paint);
+        game.paint.setStyle(Paint.Style.FILL);
+        game.paint.setColor(color);
+        canvas.drawRect((float) (x - r / 2), (float) (y - r / 2), (float) (x + r / 2), (float) (y + r / 2), game.paint);
 
-        gameView.paint.setStyle(Paint.Style.STROKE);
-        gameView.paint.setColor(Color.WHITE);
-        gameView.paint.setStrokeWidth(3);
-        canvas.drawRect((float) (x - r / 2), (float) (y - r / 2), (float) (x + r / 2), (float) (y + r / 2), gameView.paint);
+        game.paint.setStyle(Paint.Style.STROKE);
+        game.paint.setColor(Color.WHITE);
+        game.paint.setStrokeWidth(3);
+        canvas.drawRect((float) (x - r / 2), (float) (y - r / 2), (float) (x + r / 2), (float) (y + r / 2), game.paint);
 
-        gameView.resetPaint();
+        game.resetPaint();
     }
 }
