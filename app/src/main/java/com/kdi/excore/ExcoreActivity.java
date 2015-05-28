@@ -22,4 +22,16 @@ public class ExcoreActivity extends Activity {
         game = new Game(this);
         setContentView(game);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        game.paused = false;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        game.paused = true;
+    }
 }

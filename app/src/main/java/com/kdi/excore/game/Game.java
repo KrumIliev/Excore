@@ -18,11 +18,13 @@ import com.kdi.excore.xfx.AudioPlayer;
 /**
  * Created by Krum Iliev on 5/22/2015.
  */
-public class Game extends SurfaceView implements SurfaceHolder.Callback {
+public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
     public int width, height;
+    private Thread gameThread;
 
-    private GameThread thread;
+    private int FPS = 60;
+    public boolean running, paused;
 
     public Typeface tf;
 
@@ -36,11 +38,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     public Game(Context context) {
         super(context);
+        init();
+    }
+
+    public void init() {
         getHolder().addCallback(this);
-        thread = new GameThread(this);
         setFocusable(true);
 
-        preferences = new ExcoreSharedPreferences(context);
+        preferences = new ExcoreSharedPreferences(getContext());
         background = Utils.getRandomColor(false);
 
         tf = Typeface.createFromAsset(getContext().getAssets(), "font.ttf");
@@ -60,26 +65,24 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         stateManager.push(new MenuState(stateManager, this, Utils.getRandomColor(false)));
 
-        thread.setRunning(true);
-        thread.start();
+        running = true;
+        gameThread = new Thread(this);
+        gameThread.start();
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    }
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        dispose();
-    }
+    public void surfaceDestroyed(SurfaceHolder holder) { dispose(); }
 
     public void dispose() {
         audioPlayer.dispose();
 
-        thread.setRunning(false);
+        running = false;
         while (true) {
             try {
-                thread.join();
+                gameThread.join();
                 return;
             } catch (InterruptedException e) {
                 // try again shutting down the thread
@@ -108,5 +111,42 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void resetPaint() {
         paint.reset();
         paint.setAntiAlias(true);
+    }
+
+    @Override
+    public void run() {
+        long startTime;
+        long URDTimeMillis;
+        long waitTime;
+
+        long targetTime = 1000 / FPS;
+
+        while (running) {
+            Canvas c = null;
+            startTime = System.nanoTime();
+            SurfaceHolder holder = getHolder();
+
+            if (!paused) {
+                try {
+                    update();
+                    c = holder.lockCanvas();
+                    synchronized (holder) {
+                        draw(c);
+                    }
+                } finally {
+                    if (c != null) {
+                        holder.unlockCanvasAndPost(c);
+                    }
+                }
+            }
+
+            URDTimeMillis = (System.nanoTime() - startTime) / 1000000;
+            waitTime = targetTime - URDTimeMillis;
+            if (waitTime < 0) waitTime = 5;
+            try {
+                Thread.sleep(waitTime);
+            } catch (Exception e) {
+            }
+        }
     }
 }
