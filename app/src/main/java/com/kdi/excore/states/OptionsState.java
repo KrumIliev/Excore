@@ -191,9 +191,9 @@ public class OptionsState extends State {
         objects = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
             if (i % 2 == 0) {
-                objects.add(new Enemy(game, this, 3, 1, -20, random.nextInt(game.height)));
+                objects.add(new Enemy(game, this, 3, 1, -20, random.nextInt(game.height), 1, false));
             } else {
-                objects.add(new Enemy(game, this, 3, 1, game.width + 20, random.nextInt(game.height)));
+                objects.add(new Enemy(game, this, 3, 1, game.width + 20, random.nextInt(game.height), 1, false));
             }
         }
     }

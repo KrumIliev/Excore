@@ -22,6 +22,9 @@ public class Player {
     public float dy;
     public int speed;
 
+    private float nx;
+    private float ny;
+
     public long firingTimer;
     public long firingDelay;
 
@@ -29,6 +32,7 @@ public class Player {
     public long recoveryTimer;
 
     public boolean immortal;
+    public boolean fly;
 
     public int lives;
     public int score;
@@ -36,7 +40,7 @@ public class Player {
 
     public int powerLevel;
     public int power;
-    public int[] requiredPower = {1, 2, 3, 4, 3, 0};
+    public int[] requiredPower = {1, 2, 3, 4, 2, 0};
 
     private Game gameView;
     private PlayState playState;
@@ -62,6 +66,7 @@ public class Player {
         recoveryTimer = 0;
 
         immortal = false;
+        fly = false;
 
         score = 0;
         visibleScore = 0;
@@ -89,25 +94,35 @@ public class Player {
         x += dx;
         y += dy;
 
+        if (!fly) {
+            if (dy < 0) {
+                if (y < ny) dy = 0;
+            } else {
+                if (y > ny) dy = 0;
+            }
+
+            if (dx < 0) {
+                if (x < nx) dx = 0;
+            } else {
+                if (x > nx) dx = 0;
+            }
+        }
+
         if (x < r) {
             x = r;
-            dx = 0;
-            dy = 0;
+            dx = -dx;
         }
         if (y < r) {
             y = r;
-            dx = 0;
-            dy = 0;
+            dy = -dy;
         }
         if (x > gameView.getWidth() - r) {
             x = gameView.getWidth() - r;
-            dx = 0;
-            dy = 0;
+            dx = -dx;
         }
         if (y > gameView.getHeight() - r) {
             y = gameView.getHeight() - r;
-            dx = 0;
-            dy = 0;
+            dy = -dy;
         }
     }
 
@@ -190,6 +205,9 @@ public class Player {
 
         dx = (float) (speed * Math.cos(dir));
         dy = (float) (speed * Math.sin(dir));
+
+        nx = newX;
+        ny = newY;
     }
 
     public void loseLife() {

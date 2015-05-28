@@ -19,6 +19,7 @@ import com.kdi.excore.utils.Utils;
 import com.kdi.excore.xfx.AudioPlayer;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by Krum Iliev on 5/25/2015.
@@ -56,7 +57,11 @@ public class PlayState extends State {
     private long scoreTimer;
     private long scoreDiff;
     private int scoreTopY;
-    private boolean doubleScore;
+    private int scoreMultiplier;
+
+    private long flyTimer;
+    private long flyDiff;
+    private int flyTopY;
 
     private int powerLength = 6000;
 
@@ -65,7 +70,9 @@ public class PlayState extends State {
 
     private PauseState pauseState;
 
-    private int maxEnemiesOnScreen;
+    private int maxTypeOneWave;
+    private int maxTypeTwoWave;
+    private int maxTypeThreeWave;
 
     public PlayState(StateManager stateManager, Game game, int color) {
         super(stateManager, game);
@@ -102,9 +109,13 @@ public class PlayState extends State {
         fastTopY = 0;
         immortalTopY = 0;
         scoreTopY = 0;
-        doubleScore = false;
+        flyTopY = 0;
 
-        maxEnemiesOnScreen = 20;
+        maxTypeOneWave = 15;
+        maxTypeTwoWave = 7;
+        maxTypeThreeWave = 3;
+
+        scoreMultiplier = 1;
     }
 
     @Override
@@ -115,7 +126,7 @@ public class PlayState extends State {
 
             // Create enemies
             if (waveStart && enemies.size() == 0) {
-                createNewEnemies();
+                generateWave();
             }
 
             player.update();
@@ -131,6 +142,7 @@ public class PlayState extends State {
             updateImmortal();
             updateScoreTimer();
             updateSubtitles();
+            updateFly();
 
         } else {
             if (pauseState.update()) {
@@ -183,13 +195,7 @@ public class PlayState extends State {
             if (enemy.dead) {
                 addPowerUp(enemy);
 
-                int score = (enemy.type + enemy.rank) * 6;
-                if (doubleScore) {
-                    Log.d("PlayState", "Points: " + score);
-                    score *= 2;
-                    Log.d("PlayState", "Points after power up: " + score);
-                }
-                player.addScore(score);
+                player.addScore(((enemy.type + enemy.rank) * 6) * scoreMultiplier);
 
                 enemies.remove(i);
                 i--;
@@ -273,7 +279,18 @@ public class PlayState extends State {
             if (scoreDiff > powerLength) {
                 scoreTimer = 0;
                 scoreTopY = 0;
-                doubleScore = false;
+                scoreMultiplier = 1;
+            }
+        }
+    }
+
+    private void updateFly() {
+        if (flyTimer != 0) {
+            flyDiff = (System.nanoTime() - flyTimer) / 1000000;
+            if (flyDiff > powerLength) {
+                flyTimer = 0;
+                flyTopY = 0;
+                player.fly = false;
             }
         }
     }
@@ -358,9 +375,10 @@ public class PlayState extends State {
                     }
                 }
 
-                if (powerUp.type == PowerUp.TYPE_UPDATE_ENEMY) {
-                    for (Enemy enemy : enemies)
-                        enemy.increaseRank();
+                if (powerUp.type == PowerUp.TYPE_FLY) {
+                    flyTimer = System.nanoTime();
+                    player.fly = true;
+                    if (flyTopY == 0) flyTopY = getFreeTimerPosition();
                 }
 
                 if (powerUp.type == PowerUp.TYPE_IMMORTALITY) {
@@ -371,7 +389,8 @@ public class PlayState extends State {
 
                 if (powerUp.type == PowerUp.TYPE_DOUBLE_SCORE) {
                     scoreTimer = System.nanoTime();
-                    doubleScore = true;
+                    scoreMultiplier *= 2; // Doubles the score multiplier every power up the player collects
+                    if (scoreMultiplier > 64) scoreMultiplier = 64; // 64 will be max multiplier
                     if (scoreTopY == 0) scoreTopY = getFreeTimerPosition();
                 }
 
@@ -383,13 +402,16 @@ public class PlayState extends State {
 
     private int getFreeTimerPosition() {
         int position = 40;
-        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position)
+        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position && flyTopY != position)
             return position;
         position = 60;
-        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position)
+        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position && flyTopY != position)
             return position;
         position = 80;
-        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position)
+        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position && flyTopY != position)
+            return position;
+        position = 100;
+        if (slowTopY != position && fastTopY != position && immortalTopY != position && scoreTopY != position && flyTopY != position)
             return position;
         return 40;
     }
@@ -408,6 +430,7 @@ public class PlayState extends State {
         drawTimer(canvas, fastTimer, fastDiff, Color.BLUE, fastTopY);
         drawTimer(canvas, immortalTimer, immortalDiff, Color.YELLOW, immortalTopY);
         drawTimer(canvas, scoreTimer, scoreDiff, Color.GRAY, scoreTopY);
+        drawTimer(canvas, flyTimer, flyDiff, Color.BLACK, flyTopY);
         drawPower(canvas);
         drawMenuButton(canvas);
 
@@ -454,12 +477,12 @@ public class PlayState extends State {
         for (int i = 0; i < player.lives; i++) {
             game.paint.setStyle(Paint.Style.FILL);
             game.paint.setColor(Color.GRAY);
-            canvas.drawCircle(25 + (25 * i), 70, player.r / 2, game.paint);
+            canvas.drawCircle(25 + (25 * i), 100, player.r / 2, game.paint);
 
             game.paint.setStyle(Paint.Style.STROKE);
             game.paint.setColor(Color.WHITE);
             game.paint.setStrokeWidth(2);
-            canvas.drawCircle(25 + (25 * i), 70, player.r / 2, game.paint);
+            canvas.drawCircle(25 + (25 * i), 100, player.r / 2, game.paint);
             game.resetPaint();
         }
     }
@@ -468,7 +491,8 @@ public class PlayState extends State {
         game.paint.setTypeface(game.tf);
         game.paint.setTextSize(35);
         game.paint.setColor(Color.WHITE);
-        canvas.drawText("Score: " + player.score, 15, 35, game.paint);
+        canvas.drawText("Score x" + scoreMultiplier, 15, 35, game.paint);
+        canvas.drawText("" + player.score, 15, 70, game.paint);
         game.resetPaint();
     }
 
@@ -547,7 +571,7 @@ public class PlayState extends State {
         else if (rand < 0.130)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_SLOW, enemy.x, enemy.y));
         else if (rand < 0.140)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_UPDATE_ENEMY, enemy.x, enemy.y));
+            powerUps.add(new PowerUp(game, PowerUp.TYPE_FLY, enemy.x, enemy.y));
     }
 
     public void addBullet(float angle, double x, double y) {
@@ -560,67 +584,30 @@ public class PlayState extends State {
         enemies.add(enemy);
     }
 
-    private void createNewEnemies() {
+    private void generateWave() {
         enemies.clear();
+        Random random = new Random();
+        int wave = waveNumber % 10;
+        if (waveNumber < 10) wave = waveNumber;
+        double multiplier = waveNumber / 10;
+        if (multiplier < 1) multiplier = 1;
 
-        if (waveNumber == 1) {
-            for (int i = 0; i < 4; i++) {
-                addEnemy(new Enemy(game, this, 1, 1));
+        Log.d("Wave", "Multi: " + multiplier);
+
+        if (wave == 0) {
+            enemies.add(new Enemy(game, this, random.nextInt(4) + 1, 4, multiplier, true));
+        } else if (wave >= 1 && wave <= 3) {
+            for (int i = 0; i < maxTypeOneWave; i++) {
+                enemies.add(new Enemy(game, this, random.nextInt(4) + 1, 1, multiplier, false));
             }
-        }
-
-        if (waveNumber == 2) {
-            for (int i = 0; i < 4; i++) {
-                addEnemy(new Enemy(game, this, 1, 1));
+        } else if (wave >= 4 && wave <= 6) {
+            for (int i = 0; i < maxTypeTwoWave; i++) {
+                enemies.add(new Enemy(game, this, random.nextInt(4) + 1, 2, multiplier, false));
             }
-            addEnemy(new Enemy(game, this, 1, 2));
-            addEnemy(new Enemy(game, this, 1, 2));
-        }
-
-        if (waveNumber == 3) {
-            addEnemy(new Enemy(game, this, 1, 3));
-            addEnemy(new Enemy(game, this, 1, 3));
-            addEnemy(new Enemy(game, this, 1, 4));
-        }
-
-        if (waveNumber == 4) {
-            for (int i = 0; i < 4; i++) {
-                addEnemy(new Enemy(game, this, 2, 1));
+        } else {
+            for (int i = 0; i < maxTypeThreeWave; i++) {
+                enemies.add(new Enemy(game, this, random.nextInt(4) + 1, 3, multiplier, false));
             }
-        }
-
-        if (waveNumber == 5) {
-            for (int i = 0; i < 4; i++) {
-                addEnemy(new Enemy(game, this, 2, 1));
-            }
-            addEnemy(new Enemy(game, this, 2, 2));
-            addEnemy(new Enemy(game, this, 2, 2));
-        }
-
-        if (waveNumber == 6) {
-            addEnemy(new Enemy(game, this, 2, 3));
-            addEnemy(new Enemy(game, this, 2, 3));
-            addEnemy(new Enemy(game, this, 2, 4));
-        }
-
-        if (waveNumber == 7) {
-            for (int i = 0; i < 4; i++) {
-                addEnemy(new Enemy(game, this, 3, 1));
-            }
-        }
-
-        if (waveNumber == 8) {
-            for (int i = 0; i < 4; i++) {
-                addEnemy(new Enemy(game, this, 3, 1));
-            }
-            addEnemy(new Enemy(game, this, 3, 2));
-            addEnemy(new Enemy(game, this, 3, 2));
-        }
-
-        if (waveNumber == 9) {
-            addEnemy(new Enemy(game, this, 3, 3));
-            addEnemy(new Enemy(game, this, 3, 3));
-            addEnemy(new Enemy(game, this, 3, 4));
         }
     }
 }

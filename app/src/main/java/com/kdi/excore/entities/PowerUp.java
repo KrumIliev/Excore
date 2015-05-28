@@ -15,7 +15,7 @@ public class PowerUp extends Entity {
     public static final int TYPE_POWER = 2;
     public static final int TYPE_SLOW = 3;
     public static final int TYPE_DESTROY = 4;
-    public static final int TYPE_UPDATE_ENEMY = 6;
+    public static final int TYPE_FLY = 6;
     public static final int TYPE_FASTER_ENEMY = 7;
     public static final int TYPE_IMMORTALITY = 8;
     public static final int TYPE_DOUBLE_SCORE = 9;
@@ -48,9 +48,9 @@ public class PowerUp extends Entity {
             color = Color.RED;
             text = "K i l l   a l l !";
         }
-        if (type == TYPE_UPDATE_ENEMY) {
+        if (type == TYPE_FLY) {
             color = Color.BLACK;
-            text = "E n e m i e s    u p d a t e";
+            text = "K e e p   o n   f l y i n g";
         }
         if (type == TYPE_FASTER_ENEMY) {
             color = Color.BLUE;
