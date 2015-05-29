@@ -211,11 +211,4 @@ public class Enemy extends Entity {
         speed += (multiplier / 2);
         health += (multiplier * rank);
     }
-
-    public void increaseRank() {
-        setBaseStats();
-        rank++;
-        if (rank > maxRank) rank = maxRank;
-        setRank();
-    }
 }

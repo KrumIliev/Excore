@@ -14,15 +14,13 @@ public class MainMenuState extends Menu {
 
     private Rect playButton;
     private Rect optionButton;
-    private Rect exitButton;
-    private Rect helpButton;
+    private Rect aboutButton;
     private Rect rankButton;
 
     private String strPlay;
     private String strRank;
     private String strOptions;
-    private String strHelp;
-    private String strExit;
+    private String strAbout;
 
     public MainMenuState(StateManager stateManager, Game game, int color) {
         super(stateManager, game, color, Enemy.TYPE_NORMAL);
@@ -48,12 +46,8 @@ public class MainMenuState extends Menu {
         }
 
 
-        if (helpButton.contains((int) x, (int) y)) {
+        if (aboutButton.contains((int) x, (int) y)) {
 
-        }
-
-        if (exitButton.contains((int) x, (int) y)) {
-            game.litener.onExit();
         }
     }
 
@@ -64,8 +58,7 @@ public class MainMenuState extends Menu {
         drawButton(canvas, playButton, strPlay, null, 40);
         drawButton(canvas, rankButton, strRank, null, 40);
         drawButton(canvas, optionButton, strOptions, null, 40);
-        drawButton(canvas, helpButton, strHelp, null, 40);
-        drawButton(canvas, exitButton, strExit, null, 40);
+        drawButton(canvas, aboutButton, strAbout, null, 40);
 
         if (showAnim) anim.draw(canvas);
     }
@@ -74,12 +67,11 @@ public class MainMenuState extends Menu {
         strPlay = "- P l a y -";
         strRank = "- R a n k -";
         strOptions = "- O p t i o n s -";
-        strHelp = "- H e l p -";
-        strExit = "- E x i t -";
+        strAbout = "- A b o u t -";
 
         int buttonWidth = game.width / 2 + 100;
-        int buttonVerticalSpace = 50;
-        int buttonHeight = (game.height - (buttonVerticalSpace * 6)) / 5;
+        int buttonHeight = 100;
+        int buttonVerticalSpace = (game.height - buttonHeight * 4) / 5;
 
         int left = (game.width - buttonWidth) / 2;
         int right = game.width - left;
@@ -97,10 +89,6 @@ public class MainMenuState extends Menu {
 
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;
-        helpButton = new Rect(left, top, right, bottom);
-
-        top = bottom + buttonVerticalSpace;
-        bottom = top + buttonHeight;
-        exitButton = new Rect(left, top, right, bottom);
+        aboutButton = new Rect(left, top, right, bottom);
     }
 }

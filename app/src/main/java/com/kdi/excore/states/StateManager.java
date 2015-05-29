@@ -19,10 +19,6 @@ public class StateManager {
         states.push(state);
     }
 
-    public void pop() {
-        states.pop();
-    }
-
     public void setState(State state) {
         states.pop();
         states.push(state);
