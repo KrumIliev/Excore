@@ -18,7 +18,7 @@ public abstract class State {
         this.game = game;
     }
 
-    public abstract void handleInput (float x, float y);
+    public abstract void handleInput(float x, float y);
 
     public abstract void update();
 

@@ -9,7 +9,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.kdi.excore.R;
-import com.kdi.excore.states.MenuState;
+import com.kdi.excore.states.menu.MainMenuState;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.utils.Utils;
@@ -35,9 +35,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
 
     private StateManager stateManager;
     public ExcoreSharedPreferences preferences;
+    public GameListener litener;
 
-    public Game(Context context) {
+    public Game(Context context, GameListener listener) {
         super(context);
+        this.litener = listener;
         init();
     }
 
@@ -63,7 +65,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         width = getWidth();
         height = getHeight();
 
-        stateManager.push(new MenuState(stateManager, this, Utils.getRandomColor(false)));
+        stateManager.push(new MainMenuState(stateManager, this, Utils.getRandomColor(false)));
 
         running = true;
         gameThread = new Thread(this);

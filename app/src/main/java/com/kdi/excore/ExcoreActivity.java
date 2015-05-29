@@ -6,8 +6,9 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.kdi.excore.game.Game;
+import com.kdi.excore.game.GameListener;
 
-public class ExcoreActivity extends Activity {
+public class ExcoreActivity extends Activity implements GameListener {
 
     private Game game;
 
@@ -19,7 +20,7 @@ public class ExcoreActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        game = new Game(this);
+        game = new Game(this, this);
         setContentView(game);
     }
 
@@ -33,5 +34,10 @@ public class ExcoreActivity extends Activity {
     protected void onPause() {
         super.onPause();
         game.paused = true;
+    }
+
+    @Override
+    public void onExit() {
+        finish();
     }
 }

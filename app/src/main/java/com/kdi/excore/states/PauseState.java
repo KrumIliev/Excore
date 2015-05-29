@@ -7,6 +7,7 @@ import android.graphics.Rect;
 
 import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.game.Game;
+import com.kdi.excore.states.menu.MainMenuState;
 import com.kdi.excore.utils.Utils;
 
 /**
@@ -113,7 +114,7 @@ public class PauseState {
             boolean remove = exitAnim.update();
             if (remove) {
                 showExitAnim = false;
-                stateManager.setState(new MenuState(stateManager, game, exitAnim.color));
+                stateManager.setState(new MainMenuState(stateManager, game, exitAnim.color));
             }
         }
 
