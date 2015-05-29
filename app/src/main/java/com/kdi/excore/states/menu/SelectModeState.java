@@ -14,18 +14,15 @@ import com.kdi.excore.states.StateManager;
 public class SelectModeState extends Menu {
 
     private Rect normal;
-    private Rect survival;
     private Rect hardcore;
     private Rect time;
     private Rect back;
 
     private String sNormal;
-    private String sSurvival;
     private String sHardcore;
     private String sTime;
     private String sBack;
 
-    private String subSurvival;
     private String subHardcore;
     private String subTime;
 
@@ -39,22 +36,18 @@ public class SelectModeState extends Menu {
         if (showAnim) return;
 
         if (normal.contains((int) x, (int) y)) {
-            nextState = new PlayState(stateManager, game, anim.color, false);
+            nextState = new PlayState(stateManager, game, anim.color, PlayState.MODE_NORMAL);
             showAnim = true;
         }
 
         if (hardcore.contains((int) x, (int) y)) {
-            nextState = new PlayState(stateManager, game, anim.color, true);
+            nextState = new PlayState(stateManager, game, anim.color, PlayState.MODE_HARDCORE);
             showAnim = true;
         }
 
         if (time.contains((int) x, (int) y)) {
-
-        }
-
-
-        if (survival.contains((int) x, (int) y)) {
-
+            nextState = new PlayState(stateManager, game, anim.color, PlayState.MODE_TIME_ATTACK);
+            showAnim = true;
         }
 
         if (back.contains((int) x, (int) y)) {
@@ -70,7 +63,6 @@ public class SelectModeState extends Menu {
         drawButton(canvas, normal, sNormal, null, 40);
         drawButton(canvas, hardcore, sHardcore, subHardcore, 40);
         drawButton(canvas, time, sTime, subTime, 40);
-        drawButton(canvas, survival, sSurvival, subSurvival, 40);
         drawButton(canvas, back, sBack, null, 40);
 
         if (showAnim) anim.draw(canvas);
@@ -82,13 +74,11 @@ public class SelectModeState extends Menu {
         subHardcore = "O n l y   1   l i f e";
         sTime = "- T i m e   A t t a c k -";
         subTime = "I f   t h e   t i m e   e n d s   y o u   e n d";
-        sSurvival = "- S u r v i v a l -";
-        subSurvival = "N o   s h o o t i n g   o n l y   d o d g i n g";
         sBack = "- B a c k -";
 
         int buttonWidth = game.width / 2 + 100;
-        int buttonVerticalSpace = 50;
-        int buttonHeight = (game.height - (buttonVerticalSpace * 6)) / 5;
+        int buttonHeight = 100;
+        int buttonVerticalSpace = (game.height - buttonHeight * 4) / 5;
 
         int left = (game.width - buttonWidth) / 2;
         int right = game.width - left;
@@ -103,10 +93,6 @@ public class SelectModeState extends Menu {
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;
         time = new Rect(left, top, right, bottom);
-
-        top = bottom + buttonVerticalSpace;
-        bottom = top + buttonHeight;
-        survival = new Rect(left, top, right, bottom);
 
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;

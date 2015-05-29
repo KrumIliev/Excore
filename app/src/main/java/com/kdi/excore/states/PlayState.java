@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.CountDownTimer;
 import android.util.Log;
 
 import com.kdi.excore.animations.ColorAnimation;
@@ -28,6 +29,10 @@ import java.util.Random;
  */
 public class PlayState extends State {
 
+    public static int MODE_NORMAL = 0;
+    public static int MODE_HARDCORE = 1;
+    public static int MODE_TIME_ATTACK = 2;
+
     private Player player;
     private ArrayList<Bullet> bullets;
     public ArrayList<Enemy> enemies;
@@ -43,6 +48,7 @@ public class PlayState extends State {
     private int waveNumber;
     private boolean waveStart;
     private int waveDelay = 2000;
+    private boolean survivalWaveStart;
 
     public long slowTimer;
     private long slowDiff;
@@ -77,13 +83,18 @@ public class PlayState extends State {
     private int maxTypeTwoWave;
     private int maxTypeThreeWave;
 
-    private boolean hardcore;
+    public int mode;
 
-    public PlayState(StateManager stateManager, Game game, int color, boolean hardcore) {
+    private String countdownTimerString;
+    private long countdownTimerLength;
+    private CountDownTimer countdownTimer;
+
+    public PlayState(StateManager stateManager, Game game, int color, int mode) {
         super(stateManager, game);
         background = color;
-        this.hardcore = hardcore;
+        this.mode = mode;
         init();
+        if (mode == MODE_TIME_ATTACK) initTimer();
     }
 
     private void init() {
@@ -125,6 +136,28 @@ public class PlayState extends State {
         scoreMultiplier = 1;
     }
 
+    private void initTimer() {
+        countdownTimerString = "40";
+        countdownTimerLength = 60000;
+
+        countdownTimer = new CountDownTimer(countdownTimerLength, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long seconds = millisUntilFinished / 1000;
+                if (seconds > 9) {
+                    countdownTimerString = "" + seconds;
+                } else {
+                    countdownTimerString = "0" + seconds;
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                if (!enemies.isEmpty()) player.dead = true;
+            }
+        };
+    }
+
     @Override
     public void update() {
         if (!pause && !player.dead) {
@@ -161,6 +194,10 @@ public class PlayState extends State {
                 if (gameOver.update()) {
                     gameOver.reset();
                     player.continueGame();
+                    if (mode == MODE_TIME_ATTACK) {
+                        countdownTimer.cancel();
+                        countdownTimer.start();
+                    }
                 }
             }
         }
@@ -172,6 +209,11 @@ public class PlayState extends State {
             waveStart = false;
             waveStartTimer = System.nanoTime();
             showNextWaveAnimation = true;
+            if (mode == MODE_TIME_ATTACK) {
+                countdownTimer.cancel();
+                countdownTimer.start();
+            }
+
         } else {
             waveStartTimerDiff = (System.nanoTime() - waveStartTimer) / 1000000;
             if (waveStartTimerDiff > waveDelay) {
@@ -336,7 +378,7 @@ public class PlayState extends State {
                 double dy = player.y - enemy.y;
                 double dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < player.r + enemy.r) {
-                    if (hardcore) player.dead = true;
+                    if (mode == MODE_HARDCORE) player.dead = true;
                     else player.loseLife();
                 }
             }
@@ -438,7 +480,7 @@ public class PlayState extends State {
 
         // Draw wave number
         drawWaveNumber(canvas);
-        if (!hardcore) drawPlayerLives(canvas);
+        if (mode != MODE_HARDCORE) drawPlayerLives(canvas);
         drawPlayerScore(canvas);
 
         drawTimer(canvas, slowTimer, slowDiff, Color.GREEN, slowTopY);
@@ -448,6 +490,7 @@ public class PlayState extends State {
         drawTimer(canvas, flyTimer, flyDiff, Color.BLACK, flyTopY);
         drawPower(canvas);
         drawMenuButton(canvas);
+        if (mode == MODE_TIME_ATTACK) drawCountDownTimer(canvas);
 
         // Player draw
         player.draw(canvas);
@@ -526,6 +569,13 @@ public class PlayState extends State {
         }
     }
 
+    private void drawCountDownTimer(Canvas canvas) {
+        game.paint.setTypeface(game.tf);
+        game.paint.setTextSize(60);
+        game.paint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText(countdownTimerString, game.width / 2, 120, game.paint);
+    }
+
     private void drawPower(Canvas canvas) {
         game.paint.setStyle(Paint.Style.FILL);
         int color = Color.WHITE;
@@ -574,9 +624,10 @@ public class PlayState extends State {
 
     public void addPowerUp(Enemy enemy) {
         double rand = Math.random();
-        if (rand < 0.001)
-            if (!hardcore) powerUps.add(new PowerUp(game, PowerUp.TYPE_LIFE, enemy.x, enemy.y));
-        else if (rand < 0.020)
+        if (rand < 0.001) {
+            if (mode != MODE_HARDCORE)
+                powerUps.add(new PowerUp(game, PowerUp.TYPE_LIFE, enemy.x, enemy.y));
+        } else if (rand < 0.020)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_DESTROY, enemy.x, enemy.y));
         else if (rand < 0.050)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_IMMORTALITY, enemy.x, enemy.y));
