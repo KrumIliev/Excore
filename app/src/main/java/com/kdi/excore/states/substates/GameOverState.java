@@ -42,7 +42,9 @@ public class GameOverState extends Substate {
         }
 
         @Override
-        public void onFinish() {}
+        public void onFinish() {
+            showExitAnim = true;
+        }
     };
 
     public GameOverState(Game game, StateManager stateManager) {

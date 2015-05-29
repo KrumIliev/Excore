@@ -39,12 +39,13 @@ public class SelectModeState extends Menu {
         if (showAnim) return;
 
         if (normal.contains((int) x, (int) y)) {
-            nextState = new PlayState(stateManager, game, anim.color);
+            nextState = new PlayState(stateManager, game, anim.color, false);
             showAnim = true;
         }
 
         if (hardcore.contains((int) x, (int) y)) {
-
+            nextState = new PlayState(stateManager, game, anim.color, true);
+            showAnim = true;
         }
 
         if (time.contains((int) x, (int) y)) {

@@ -77,9 +77,12 @@ public class PlayState extends State {
     private int maxTypeTwoWave;
     private int maxTypeThreeWave;
 
-    public PlayState(StateManager stateManager, Game game, int color) {
+    private boolean hardcore;
+
+    public PlayState(StateManager stateManager, Game game, int color, boolean hardcore) {
         super(stateManager, game);
         background = color;
+        this.hardcore = hardcore;
         init();
     }
 
@@ -332,7 +335,10 @@ public class PlayState extends State {
                 double dx = player.x - enemy.x;
                 double dy = player.y - enemy.y;
                 double dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < player.r + enemy.r) player.loseLife();
+                if (dist < player.r + enemy.r) {
+                    if (hardcore) player.dead = true;
+                    else player.loseLife();
+                }
             }
         }
     }
@@ -432,7 +438,7 @@ public class PlayState extends State {
 
         // Draw wave number
         drawWaveNumber(canvas);
-        drawPlayerLives(canvas);
+        if (!hardcore) drawPlayerLives(canvas);
         drawPlayerScore(canvas);
 
         drawTimer(canvas, slowTimer, slowDiff, Color.GREEN, slowTopY);
@@ -569,7 +575,7 @@ public class PlayState extends State {
     public void addPowerUp(Enemy enemy) {
         double rand = Math.random();
         if (rand < 0.001)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_LIFE, enemy.x, enemy.y));
+            if (!hardcore) powerUps.add(new PowerUp(game, PowerUp.TYPE_LIFE, enemy.x, enemy.y));
         else if (rand < 0.020)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_DESTROY, enemy.x, enemy.y));
         else if (rand < 0.050)
