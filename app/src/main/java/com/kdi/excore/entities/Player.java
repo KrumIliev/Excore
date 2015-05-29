@@ -37,6 +37,7 @@ public class Player {
     public int lives;
     public int score;
     public int visibleScore;
+    public boolean dead;
 
     public int powerLevel;
     public int power;
@@ -58,6 +59,7 @@ public class Player {
         speed = 5;
 
         lives = 3;
+        dead = false;
 
         firingTimer = System.nanoTime();
         firingDelay = 200;
@@ -212,7 +214,10 @@ public class Player {
 
     public void loseLife() {
         lives--;
-        if (lives < 0) lives = 0; //TODO end game
+        if (lives <= 0) {
+            lives = 0;
+            dead = true;
+        }
         recovering = true;
         recoveryTimer = System.nanoTime();
         //TODO set power level for more difficulty
@@ -242,5 +247,14 @@ public class Player {
 
     public int getRequiredPower() {
         return requiredPower[powerLevel];
+    }
+
+    public void continueGame() {
+        score = 0;
+        visibleScore = 0;
+        lives = 3;
+        dead = false;
+        recovering = true;
+        recoveryTimer = System.nanoTime();
     }
 }

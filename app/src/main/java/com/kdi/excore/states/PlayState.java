@@ -14,6 +14,8 @@ import com.kdi.excore.entities.Player;
 import com.kdi.excore.entities.PowerUp;
 import com.kdi.excore.entities.Subtitle;
 import com.kdi.excore.game.Game;
+import com.kdi.excore.states.substates.GameOverState;
+import com.kdi.excore.states.substates.PauseState;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.utils.Utils;
 import com.kdi.excore.xfx.AudioPlayer;
@@ -69,6 +71,7 @@ public class PlayState extends State {
     public Rect pauseButton;
 
     private PauseState pauseState;
+    private GameOverState gameOver;
 
     private int maxTypeOneWave;
     private int maxTypeTwoWave;
@@ -104,6 +107,7 @@ public class PlayState extends State {
         int bottom = top + pauseHeight;
         pauseButton = new Rect(left, top, right, bottom);
         pauseState = new PauseState(game, stateManager);
+        gameOver = new GameOverState(game, stateManager);
 
         slowTopY = 0;
         fastTopY = 0;
@@ -120,7 +124,7 @@ public class PlayState extends State {
 
     @Override
     public void update() {
-        if (!pause) {
+        if (!pause && !player.dead) {
             updateWave();
             updateNextWaveAnimation();
 
@@ -145,9 +149,16 @@ public class PlayState extends State {
             updateFly();
 
         } else {
-            if (pauseState.update()) {
-                pause = false;
-                pauseState.reset();
+            if (pause) {
+                if (pauseState.update()) {
+                    pause = false;
+                    pauseState.reset();
+                }
+            } else {
+                if (gameOver.update()) {
+                    gameOver.reset();
+                    player.continueGame();
+                }
             }
         }
     }
@@ -321,9 +332,7 @@ public class PlayState extends State {
                 double dx = player.x - enemy.x;
                 double dy = player.y - enemy.y;
                 double dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < player.r + enemy.r) {
-                    player.loseLife();
-                }
+                if (dist < player.r + enemy.r) player.loseLife();
             }
         }
     }
@@ -457,6 +466,7 @@ public class PlayState extends State {
             subtitle.draw(canvas);
 
         if (pause) pauseState.draw(canvas);
+        if (player.dead) gameOver.draw(canvas);
     }
 
     private void drawWaveNumber(Canvas canvas) {
@@ -547,6 +557,8 @@ public class PlayState extends State {
     public void handleInput(float x, float y) {
         if (pause) {
             pauseState.handleInput(x, y);
+        } else if (player.dead) {
+            gameOver.handleInput(x, y);
         } else if (pauseButton.contains((int) x, (int) y)) {
             pause = true;
         } else {
