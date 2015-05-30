@@ -50,7 +50,7 @@ public class AboutText {
 
     public void draw(Canvas canvas) {
         drawText(canvas, mainText, 50, x, y);
-        drawText(canvas, subText, 40, x, y + 50);
+        if (subText != null) drawText(canvas, subText, 40, x, y + 50);
     }
 
     private void drawText(Canvas canvas, String text, int textSize, float x, float y) {

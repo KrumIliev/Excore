@@ -15,9 +15,11 @@ public class PauseState extends Substate {
 
     public String pauseString;
     public String resumeString;
+    public String nextString;
     public String exitString;
 
     public Rect buttonResume;
+    public Rect buttonNext;
     public Rect buttonExit;
     public Rect bounds;
 
@@ -30,6 +32,7 @@ public class PauseState extends Substate {
         pauseString = "- P A U S E -";
         resumeString = "- R E S U M E -";
         exitString = "- E X I T -";
+        nextString = "- N E X T   S O N G -";
 
         int buttonWidth = game.width / 2 + 100;
         int buttonHeight = 100;
@@ -37,7 +40,7 @@ public class PauseState extends Substate {
 
         Rect textBounds = new Rect();
         game.paint.getTextBounds(pauseString, 0, pauseString.length(), textBounds);
-        int boundsHeight = buttonHeight * 2 + buttonSpace * 3 + textBounds.height();
+        int boundsHeight = buttonHeight * 3 + buttonSpace * 4 + textBounds.height();
 
         int left = (game.width - buttonWidth) / 2;
         int right = game.width - left;
@@ -50,6 +53,10 @@ public class PauseState extends Substate {
         bottom = bounds.bottom;
         top = bottom - buttonHeight;
         buttonExit = new Rect(left, top, right, bottom);
+
+        bottom = top - buttonSpace;
+        top = bottom - buttonHeight;
+        buttonNext = new Rect(left, top, right, bottom);
 
         bottom = top - buttonSpace;
         top = bottom - buttonHeight;
@@ -72,6 +79,7 @@ public class PauseState extends Substate {
         drawPause(canvas);
         drawButton(canvas, buttonResume, resumeString);
         drawButton(canvas, buttonExit, exitString);
+        drawButton(canvas, buttonNext, nextString);
 
             /*
             ONLY FOR DEBUG

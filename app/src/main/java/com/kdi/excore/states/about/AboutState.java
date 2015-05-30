@@ -39,7 +39,7 @@ public class AboutState extends Menu {
     private void initStrings() {
         aboutTexts = new ArrayList<>();
         aboutTexts.add(new AboutText(game, "- D E V E L O P E R -", "K R U M   I L I E V"));
-        aboutTexts.add(new AboutText(game, "- M U S I C -", ""));
+        aboutTexts.add(new AboutText(game, "- M U S I C -", null));
         aboutTexts.add(new AboutText(game, "A   H i m i t s u", "C e a s e"));
         aboutTexts.add(new AboutText(game, "C a t m o s p h e r e", "C a n d y - C o l o u r e d   S k y"));
         aboutTexts.add(new AboutText(game, "D a P l a q u e", "D r e a m"));
