@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
+import com.kdi.excore.states.about.AboutState;
 
 /**
  * Created by Krum Iliev on 5/25/2015.
@@ -47,7 +48,8 @@ public class MainMenuState extends Menu {
 
 
         if (aboutButton.contains((int) x, (int) y)) {
-
+            nextState = new AboutState(stateManager, game, anim.color);
+            showAnim = true;
         }
     }
 
