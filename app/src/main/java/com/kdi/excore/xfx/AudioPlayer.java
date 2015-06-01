@@ -84,7 +84,7 @@ public class AudioPlayer {
         if (preferences.getSetting(ExcoreSharedPreferences.KEY_MUSIC)) {
             mediaPlayer = MediaPlayer.create(context, musicIds[currentIndex]);
             mediaPlayer.setLooping(false);
-            mediaPlayer.setVolume(100, 100);
+            mediaPlayer.setVolume(50, 50);
             mediaPlayer.start();
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override

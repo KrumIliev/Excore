@@ -137,7 +137,7 @@ public class PlayState extends State {
 
     private void initTimer() {
         countdownTimerString = "40";
-        countdownTimerLength = 60000;
+        countdownTimerLength = 40000;
 
         countdownTimer = new CountDownTimer(countdownTimerLength, 1000) {
             @Override
