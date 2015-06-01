@@ -7,6 +7,7 @@ import android.graphics.Rect;
 
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
+import com.kdi.excore.xfx.AudioPlayer;
 
 /**
  * Created by Krum Iliev on 5/26/2015.
@@ -22,6 +23,15 @@ public class PauseState extends Substate {
     public Rect buttonNext;
     public Rect buttonExit;
     public Rect bounds;
+
+    private long resumeTimer;
+    private long resumeDiff;
+
+    private long nextTimer;
+    private long nextDiff;
+
+    private long exitTimer;
+    private long exitDiff;
 
     public PauseState(Game game, StateManager stateManager) {
         super(game, stateManager);
@@ -66,12 +76,45 @@ public class PauseState extends Substate {
     @Override
     public void handleInput(float x, float y) {
         if (showExitAnim) return;
+        if (alpha < 180) return;
 
-        if (buttonResume.contains((int) x, (int) y)) close = true;
+        if (buttonResume.contains((int) x, (int) y)) {
+            resumeTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
+            close = true;
+        }
 
-        if (buttonExit.contains((int) x, (int) y)) showExitAnim = true;
+        if (buttonExit.contains((int) x, (int) y)) {
+            exitTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
+            showExitAnim = true;
+        }
 
-        if (buttonNext.contains((int) x, (int) y)) game.audioPlayer.nextSong();
+        if (buttonNext.contains((int) x, (int) y)) {
+            nextTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
+            game.audioPlayer.nextSong();
+        }
+    }
+
+    @Override
+    public boolean update() {
+        if (resumeTimer != 0) {
+            resumeDiff = (System.nanoTime() - resumeTimer) / 1000000;
+            if (resumeDiff > 100) resumeTimer = 0;
+        }
+
+        if (nextTimer != 0) {
+            nextDiff = (System.nanoTime() - nextTimer) / 1000000;
+            if (nextDiff > 100) nextTimer = 0;
+        }
+
+        if (exitTimer != 0) {
+            exitDiff = (System.nanoTime() - exitTimer) / 1000000;
+            if (exitDiff > 100) exitTimer = 0;
+        }
+
+        return super.update();
     }
 
     @Override
@@ -83,10 +126,9 @@ public class PauseState extends Substate {
         drawButton(canvas, buttonExit, exitString);
         drawButton(canvas, buttonNext, nextString);
 
-            /*
-            ONLY FOR DEBUG
-            drawButton(canvas, bounds);
-            */
+        flashButton(canvas, buttonResume, resumeTimer);
+        flashButton(canvas, buttonExit, exitTimer);
+        flashButton(canvas, buttonNext, nextTimer);
 
         if (showExitAnim) exitAnim.draw(canvas);
     }

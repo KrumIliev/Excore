@@ -28,6 +28,8 @@ public abstract class Menu extends State {
 
     protected int alpha;
 
+    protected long flashInterval = 100;
+
     public Menu(StateManager stateManager, Game game, int color, int objectsType) {
         super(stateManager, game);
 
@@ -68,7 +70,6 @@ public abstract class Menu extends State {
         game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setStrokeWidth(2);
         canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
-
         game.resetPaint();
 
         game.paint.setTypeface(game.tf);
@@ -89,6 +90,15 @@ public abstract class Menu extends State {
             game.paint.setTextAlign(Paint.Align.CENTER);
             game.paint.getTextBounds(text, 0, text.length(), bounds);
             canvas.drawText(subtext, game.width / 2, button.bottom - 12, game.paint);
+        }
+    }
+
+    protected void flashButton(Canvas canvas, Rect button, long timer) {
+        if (timer != 0) {
+            game.paint.setStyle(Paint.Style.FILL);
+            game.paint.setColor(Color.argb(alpha, 255, 255, 255));
+            canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
+            game.resetPaint();
         }
     }
 

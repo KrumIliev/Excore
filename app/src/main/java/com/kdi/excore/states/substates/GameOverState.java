@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
+import com.kdi.excore.xfx.AudioPlayer;
 
 /**
  * Created by Krum Iliev on 5/29/2015.
@@ -27,6 +28,12 @@ public class GameOverState extends Substate {
     private Rect noButton;
 
     private boolean timeIsRunning;
+
+    private long noTimer;
+    private long noDiff;
+
+    private long yesTimer;
+    private long yesDiff;
 
     private CountDownTimer timer = new CountDownTimer(10000, 1000) {
         @Override
@@ -91,16 +98,33 @@ public class GameOverState extends Substate {
             timer.start();
         }
 
+        if (noTimer != 0) {
+            noDiff = (System.nanoTime() - noTimer) / 1000000;
+            if (noDiff > 100) noTimer = 0;
+        }
+
+        if (yesTimer != 0) {
+            yesDiff = (System.nanoTime() - yesTimer) / 1000000;
+            if (yesDiff > 100) yesTimer = 0;
+        }
+
         return super.update();
     }
 
     @Override
     public void handleInput(float x, float y) {
         if (showExitAnim) return;
+        if (alpha < 180) return;
 
-        if (yesButton.contains((int) x, (int) y)) close = true;
+        if (yesButton.contains((int) x, (int) y)) {
+            yesTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
+            close = true;
+        }
 
         if (noButton.contains((int) x, (int) y)) {
+            noTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             showExitAnim = true;
             timer.cancel();
         }
@@ -110,8 +134,13 @@ public class GameOverState extends Substate {
     public void draw(Canvas canvas) {
         drawBackground(canvas);
         drawText(canvas);
+
         drawButton(canvas, noButton, noString);
         drawButton(canvas, yesButton, yesString);
+
+        flashButton(canvas, noButton, noTimer);
+        flashButton(canvas, yesButton, yesTimer);
+
         if (showExitAnim) exitAnim.draw(canvas);
     }
 

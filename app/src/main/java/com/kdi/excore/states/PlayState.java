@@ -1,10 +1,13 @@
 package com.kdi.excore.states;
 
+import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.kdi.excore.animations.ColorAnimation;
@@ -74,6 +77,8 @@ public class PlayState extends State {
 
     public boolean pause = false;
     public Rect pauseButton;
+    private long pauseTimer;
+    private long pauseDiff;
 
     private PauseState pauseState;
     private GameOverState gameOver;
@@ -136,8 +141,8 @@ public class PlayState extends State {
     }
 
     private void initTimer() {
-        countdownTimerString = "40";
-        countdownTimerLength = 40000;
+        countdownTimerString = "60";
+        countdownTimerLength = 60000;
 
         countdownTimer = new CountDownTimer(countdownTimerLength, 1000) {
             @Override
@@ -182,6 +187,14 @@ public class PlayState extends State {
             updateScoreTimer();
             updateSubtitles();
             updateFly();
+
+            if (pauseTimer != 0) {
+                pauseDiff = (System.nanoTime() - pauseTimer) / 1000000;
+                if (pauseDiff > 100) {
+                    pauseTimer = 0;
+                    pause = true;
+                }
+            }
 
         } else {
             if (pause) {
@@ -254,6 +267,8 @@ public class PlayState extends State {
                 if (enemy.type == Enemy.TYPE_BOSS) typeMultiplier = 16;
                 int waveMultiplier = waveNumber / 10 + 1;
                 player.addScore((((enemy.type + enemy.rank) * typeMultiplier) * waveMultiplier) * scoreMultiplier);
+
+                game.audioPlayer.playSound(AudioPlayer.ENEMY_DEAD);
 
                 enemies.remove(i);
                 i--;
@@ -399,8 +414,14 @@ public class PlayState extends State {
                 if (game.preferences.getSetting(ExcoreSharedPreferences.KEY_SUBS))
                     subtitles.add(new Subtitle(game, powerUp.text));
 
-                if (powerUp.type == PowerUp.TYPE_LIFE) player.gainLife();
-                if (powerUp.type == PowerUp.TYPE_POWER) player.increasePower(1);
+                if (powerUp.type == PowerUp.TYPE_LIFE) {
+                    game.audioPlayer.playSound(AudioPlayer.POWER_UP_LIFE);
+                    player.gainLife();
+                }
+                if (powerUp.type == PowerUp.TYPE_POWER) {
+                    game.audioPlayer.playSound(AudioPlayer.POWER_UP_POWER);
+                    player.increasePower(1);
+                }
 
                 if (powerUp.type == PowerUp.TYPE_SLOW) {
                     game.audioPlayer.playSound(AudioPlayer.POWER_UP_SLOW);
@@ -412,7 +433,6 @@ public class PlayState extends State {
                         enemy.fast = false;
                         enemy.slow = true;
                     }
-
                 }
 
                 if (powerUp.type == PowerUp.TYPE_DESTROY) {
@@ -435,18 +455,21 @@ public class PlayState extends State {
                 }
 
                 if (powerUp.type == PowerUp.TYPE_FLY) {
+                    game.audioPlayer.playSound(AudioPlayer.POWER_UP_FLY);
                     flyTimer = System.nanoTime();
                     player.fly = true;
                     if (flyTopY == 0) flyTopY = getFreeTimerPosition();
                 }
 
                 if (powerUp.type == PowerUp.TYPE_IMMORTALITY) {
+                    game.audioPlayer.playSound(AudioPlayer.POWER_UP_IMMORTAL);
                     immortalTimer = System.nanoTime();
                     player.immortal = true;
                     if (immortalTopY == 0) immortalTopY = getFreeTimerPosition();
                 }
 
                 if (powerUp.type == PowerUp.TYPE_DOUBLE_SCORE) {
+                    game.audioPlayer.playSound(AudioPlayer.POWER_UP_SCORE);
                     scoreTimer = System.nanoTime();
                     scoreMultiplier *= 2; // Doubles the score multiplier every power up the player collects
                     if (scoreMultiplier > 64) scoreMultiplier = 64; // 64 will be max multiplier
@@ -598,8 +621,14 @@ public class PlayState extends State {
         game.paint.setColor(Color.WHITE);
         game.paint.setStrokeWidth(2);
         canvas.drawRect(pauseButton.left, pauseButton.top, pauseButton.right, pauseButton.bottom, game.paint);
-
         game.resetPaint();
+
+        if (pauseTimer != 0) {
+            game.paint.setStyle(Paint.Style.FILL);
+            game.paint.setColor(Color.WHITE);
+            canvas.drawRect(pauseButton.left, pauseButton.top, pauseButton.right, pauseButton.bottom, game.paint);
+            game.resetPaint();
+        }
 
         game.paint.setTypeface(game.tf);
         game.paint.setTextSize(25);
@@ -619,7 +648,8 @@ public class PlayState extends State {
         } else if (player.dead) {
             gameOver.handleInput(x, y);
         } else if (pauseButton.contains((int) x, (int) y)) {
-            pause = true;
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
+            pauseTimer = System.nanoTime();
         } else {
             player.setDestination(x, y);
         }

@@ -3,6 +3,7 @@ package com.kdi.excore.states.substates;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.game.Game;
@@ -97,6 +98,15 @@ public abstract class Substate {
         canvas.drawCircle(x, y, r, game.paint);
 
         game.resetPaint();
+    }
+
+    protected void flashButton(Canvas canvas, Rect button, long timer) {
+        if (timer != 0) {
+            game.paint.setStyle(Paint.Style.FILL);
+            game.paint.setColor(Color.argb(alpha, 255, 255, 255));
+            canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
+            game.resetPaint();
+        }
     }
 
     public void reset() {

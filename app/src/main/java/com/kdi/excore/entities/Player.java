@@ -41,10 +41,13 @@ public class Player {
 
     public int powerLevel;
     public int power;
-    public int[] requiredPower = {1, 2, 3, 4, 2, 0};
+    public int[] requiredPower = {1, 2, 3, 3, 2, 0};
 
     private Game gameView;
     private PlayState playState;
+
+    private long dischargeTimer;
+    private long dischargeDiff;
 
     public Player(Game gameView, State state) {
         this.gameView = gameView;
@@ -81,6 +84,15 @@ public class Player {
         if (score < visibleScore) {
             if (visibleScore - score > 100) score += 2;
             else score++;
+        }
+
+        if (dischargeTimer != 0) {
+            dischargeDiff = (System.nanoTime() - dischargeTimer) / 1000000;
+            if (dischargeDiff > 4000) {
+                dischargeTimer = 0;
+                power = 0;
+                powerLevel--;
+            }
         }
 
         if (recovering) {
@@ -166,16 +178,16 @@ public class Player {
             }
 
             if (powerLevel == 5) {
-                // TODO add sound
-                playState.addBullet(270, x, y - 10);
-                playState.addBullet(275, x + 5, y - 10);
-                playState.addBullet(280, x + 5, y - 10);
-                playState.addBullet(285, x + 5, y - 10);
-                playState.addBullet(265, x - 5, y - 10);
-                playState.addBullet(260, x - 5, y - 10);
-                playState.addBullet(255, x - 5, y - 10);
-                power = 0;
-                powerLevel--;
+                if (dischargeTimer != 0) {
+                    gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_DISCHARGE);
+                    playState.addBullet(270, x, y - 10);
+                    playState.addBullet(275, x + 5, y - 10);
+                    playState.addBullet(280, x + 5, y - 10);
+                    playState.addBullet(285, x + 5, y - 10);
+                    playState.addBullet(265, x - 5, y - 10);
+                    playState.addBullet(260, x - 5, y - 10);
+                    playState.addBullet(255, x - 5, y - 10);
+                }
             }
         }
     }
@@ -220,8 +232,6 @@ public class Player {
         }
         recovering = true;
         recoveryTimer = System.nanoTime();
-        //TODO set power level for more difficulty
-        //power = 0;
     }
 
     public void gainLife() {
@@ -243,6 +253,8 @@ public class Player {
                 power = requiredPower[powerLevel];
             }
         }
+
+        if (powerLevel == 5) dischargeTimer = System.nanoTime();
     }
 
     public int getRequiredPower() {

@@ -7,6 +7,7 @@ import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.PlayState;
 import com.kdi.excore.states.StateManager;
+import com.kdi.excore.xfx.AudioPlayer;
 
 /**
  * Created by Krum Iliev on 5/29/2015.
@@ -26,9 +27,46 @@ public class SelectModeState extends Menu {
     private String subHardcore;
     private String subTime;
 
+    private long normalTimer;
+    private long normalDiff;
+
+    private long harcoreTimer;
+    private long harcoreDiff;
+
+    private long attackTimer;
+    private long attackDiff;
+
+    private long backTimer;
+    private long backDiff;
+
     public SelectModeState(StateManager stateManager, Game game, int color) {
         super(stateManager, game, color, Enemy.TYPE_IMMUNE);
         initButtons();
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        if (normalTimer != 0) {
+            normalDiff = (System.nanoTime() - normalTimer) / 1000000;
+            if (normalDiff > flashInterval) normalTimer = 0;
+        }
+
+        if (harcoreTimer != 0) {
+            harcoreDiff = (System.nanoTime() - harcoreTimer) / 1000000;
+            if (harcoreDiff > flashInterval) harcoreTimer = 0;
+        }
+
+        if (attackTimer != 0) {
+            attackDiff = (System.nanoTime() - attackTimer) / 1000000;
+            if (attackDiff > flashInterval) attackTimer = 0;
+        }
+
+        if (backTimer != 0) {
+            backDiff = (System.nanoTime() - backTimer) / 1000000;
+            if (backDiff > flashInterval) backTimer = 0;
+        }
     }
 
     @Override
@@ -36,21 +74,29 @@ public class SelectModeState extends Menu {
         if (showAnim) return;
 
         if (normal.contains((int) x, (int) y)) {
+            normalTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             nextState = new PlayState(stateManager, game, anim.color, PlayState.MODE_NORMAL);
             showAnim = true;
         }
 
         if (hardcore.contains((int) x, (int) y)) {
+            harcoreTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             nextState = new PlayState(stateManager, game, anim.color, PlayState.MODE_HARDCORE);
             showAnim = true;
         }
 
         if (time.contains((int) x, (int) y)) {
+            attackTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             nextState = new PlayState(stateManager, game, anim.color, PlayState.MODE_TIME_ATTACK);
             showAnim = true;
         }
 
         if (back.contains((int) x, (int) y)) {
+            backTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             nextState = new MainMenuState(stateManager, game, anim.color);
             showAnim = true;
         }
@@ -64,6 +110,11 @@ public class SelectModeState extends Menu {
         drawButton(canvas, hardcore, sHardcore, subHardcore, 40);
         drawButton(canvas, time, sTime, subTime, 40);
         drawButton(canvas, back, sBack, null, 40);
+
+        flashButton(canvas, normal, normalTimer);
+        flashButton(canvas, hardcore, harcoreTimer);
+        flashButton(canvas, time, attackTimer);
+        flashButton(canvas, back, backTimer);
 
         if (showAnim) anim.draw(canvas);
     }

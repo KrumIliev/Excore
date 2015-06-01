@@ -7,6 +7,7 @@ import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
+import com.kdi.excore.xfx.AudioPlayer;
 
 /**
  * Created by Krum Iliev on 5/27/2015.
@@ -27,6 +28,18 @@ public class OptionsState extends Menu {
     private boolean soundState;
     private boolean subsState;
 
+    private long musicTimer;
+    private long musicDiff;
+
+    private long soundTimer;
+    private long soundDiff;
+
+    private long subsTimer;
+    private long subsDiff;
+
+    private long backTimer;
+    private long backDiff;
+
     public OptionsState(StateManager stateManager, Game game, int color) {
         super(stateManager, game, color, Enemy.TYPE_STRONG);
 
@@ -42,19 +55,30 @@ public class OptionsState extends Menu {
         if (showAnim) return;
 
         if (musicButton.contains((int) x, (int) y)) {
+            musicTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             musicState ^= true;
             game.preferences.setSetting(ExcoreSharedPreferences.KEY_MUSIC, musicState);
             setMusicState();
         }
+
         if (soundButton.contains((int) x, (int) y)) {
+            soundTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             soundState ^= true;
             game.preferences.setSetting(ExcoreSharedPreferences.KEY_SOUND, soundState);
         }
+
         if (subsButton.contains((int) x, (int) y)) {
+            subsTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             subsState ^= true;
             game.preferences.setSetting(ExcoreSharedPreferences.KEY_SUBS, subsState);
         }
+
         if (backButton.contains((int) x, (int) y)) {
+            backTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             nextState = new MainMenuState(stateManager, game, anim.color);
             showAnim = true;
         }
@@ -63,6 +87,31 @@ public class OptionsState extends Menu {
     private void setMusicState() {
         if (musicState) game.audioPlayer.playMusic();
         else game.audioPlayer.stopMusic();
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        if (musicTimer != 0) {
+            musicDiff = (System.nanoTime() - musicTimer) / 1000000;
+            if (musicDiff > flashInterval) musicTimer = 0;
+        }
+
+        if (soundTimer != 0) {
+            soundDiff = (System.nanoTime() - soundTimer) / 1000000;
+            if (soundDiff > flashInterval) soundTimer = 0;
+        }
+
+        if (subsTimer != 0) {
+            subsDiff = (System.nanoTime() - subsTimer) / 1000000;
+            if (subsDiff > flashInterval) subsTimer = 0;
+        }
+
+        if (backTimer != 0) {
+            backDiff = (System.nanoTime() - backTimer) / 1000000;
+            if (backDiff > flashInterval) backTimer = 0;
+        }
     }
 
     @Override
@@ -85,6 +134,11 @@ public class OptionsState extends Menu {
             drawButton(canvas, subsButton, subsOFF, subsWTF, 30);
 
         drawButton(canvas, backButton, back, null, 30);
+
+        flashButton(canvas, musicButton, musicTimer);
+        flashButton(canvas, soundButton, soundTimer);
+        flashButton(canvas, subsButton, subsTimer);
+        flashButton(canvas, backButton, backTimer);
 
         if (showAnim) anim.draw(canvas);
     }
