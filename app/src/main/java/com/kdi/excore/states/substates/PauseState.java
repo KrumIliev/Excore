@@ -70,6 +70,8 @@ public class PauseState extends Substate {
         if (buttonResume.contains((int) x, (int) y)) close = true;
 
         if (buttonExit.contains((int) x, (int) y)) showExitAnim = true;
+
+        if (buttonNext.contains((int) x, (int) y)) game.audioPlayer.nextSong();
     }
 
     @Override

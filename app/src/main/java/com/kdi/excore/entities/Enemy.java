@@ -7,7 +7,9 @@ import android.graphics.Paint;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.PlayState;
 import com.kdi.excore.states.State;
-import com.kdi.excore.utils.Utils;
+import com.kdi.excore.utils.ColorUtils;
+
+import java.util.Random;
 
 /**
  * Created by Krum Iliev on 5/23/2015.
@@ -18,6 +20,7 @@ public class Enemy extends Entity {
     public static final int TYPE_FAST = 2;
     public static final int TYPE_STRONG = 3;
     public static final int TYPE_IMMUNE = 4;
+    public static final int TYPE_BOSS = 5;
 
     public int health;
     public int type;
@@ -34,19 +37,16 @@ public class Enemy extends Entity {
 
     public int color;
 
-    public int maxRank = 4;
     private State state;
 
     public double multiplier;
-    public boolean boss;
 
-    public Enemy(Game gameView, State state, int type, int rank, double multiplier, boolean boss) {
+    public Enemy(Game gameView, State state, int type, int rank, double multiplier) {
         this.type = type;
         this.rank = rank;
         this.game = gameView;
         this.state = state;
         this.multiplier = multiplier;
-        this.boss = boss;
 
         if (x == 0) {
             x = Math.random() * gameView.width / 2 + gameView.width / 4;
@@ -57,7 +57,7 @@ public class Enemy extends Entity {
         setRank();
         if (multiplier != 1) applyMultiplier();
 
-        if (rank == 4) color = Utils.getRandomColor(false);
+        if (rank == 4) color = ColorUtils.getRandomColor(false);
 
         double angle = Math.random() * 140 + 20;
         rad = Math.toRadians(angle);
@@ -71,16 +71,16 @@ public class Enemy extends Entity {
         hitTimer = 0;
     }
 
-    public Enemy(Game gameView, State state, int type, int rank, double x, double y, double multiplier, int color, boolean boss) {
-        this(gameView, state, type, rank, multiplier, boss);
+    public Enemy(Game gameView, State state, int type, int rank, double x, double y, double multiplier, int color) {
+        this(gameView, state, type, rank, multiplier);
 
         this.x = x;
         this.y = y;
         this.color = color;
     }
 
-    public Enemy(Game gameView, State state, int type, int rank, double x, double y, double multiplier, boolean boss) {
-        this(gameView, state, type, rank, multiplier, boss);
+    public Enemy(Game gameView, State state, int type, int rank, double x, double y, double multiplier) {
+        this(gameView, state, type, rank, multiplier);
 
         this.x = x;
         this.y = y;
@@ -148,15 +148,16 @@ public class Enemy extends Entity {
     }
 
     public void destroy() {
-        if (type != TYPE_IMMUNE && !boss) dead = true;
+        if (type != TYPE_IMMUNE && type != TYPE_BOSS) dead = true;
     }
 
     public void explode() {
         if (rank > 1) {
             int amount = 3;
+            if (type == TYPE_BOSS) amount = 2;
 
             for (int i = 0; i < amount; i++) {
-                Enemy enemy = new Enemy(game, state, type, rank - 1, this.x, this.y, this.multiplier, this.color, this.boss);
+                Enemy enemy = new Enemy(game, state, type, rank - 1, this.x, this.y, this.multiplier, this.color);
                 double angle;
                 if (!ready)
                     angle = Math.random() * 140 + 20;
@@ -196,6 +197,14 @@ public class Enemy extends Entity {
             r = 20;
             health = 2;
         }
+
+        if (type == TYPE_BOSS) {
+            color = ColorUtils.getRandomColor();
+            speed = 2;
+            Random random = new Random();
+            r = random.nextInt(30 - 15) + 15;
+            health = 10;
+        }
     }
 
     private void setRank() {
@@ -209,6 +218,6 @@ public class Enemy extends Entity {
 
     private void applyMultiplier() {
         speed += (multiplier / 2);
-        health += (multiplier * rank);
+        health *= multiplier;
     }
 }

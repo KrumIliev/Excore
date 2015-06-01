@@ -8,7 +8,7 @@ import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.states.menu.MainMenuState;
-import com.kdi.excore.utils.Utils;
+import com.kdi.excore.utils.ColorUtils;
 
 /**
  * Created by Krum Iliev on 5/29/2015.
@@ -42,13 +42,13 @@ public abstract class Substate {
         maxR = game.getWidth() / 2 > game.getHeight() / 2 ? game.getWidth() / 2 : game.getHeight() / 2;
         maxR = maxR + 110;
 
-        color = Utils.getRandomColor(true);
+        color = ColorUtils.getRandomColor(true);
         r = 1;
 
         close = false;
         expand = true;
 
-        exitAnim = new ColorAnimation(game, Utils.getRandomColor(false));
+        exitAnim = new ColorAnimation(game, ColorUtils.getRandomColor(false));
 
         alpha = 0;
     }
@@ -103,7 +103,7 @@ public abstract class Substate {
         r = 1;
         close = false;
         expand = true;
-        color = Utils.getRandomColor(true);
+        color = ColorUtils.getRandomColor(true);
         alpha = 0;
     }
 }

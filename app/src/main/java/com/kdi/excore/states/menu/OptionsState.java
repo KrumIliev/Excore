@@ -3,7 +3,6 @@ package com.kdi.excore.states.menu;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
-import com.kdi.excore.R;
 import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
@@ -62,7 +61,7 @@ public class OptionsState extends Menu {
     }
 
     private void setMusicState() {
-        if (musicState) game.audioPlayer.playMusic(R.raw.track_1);
+        if (musicState) game.audioPlayer.playMusic();
         else game.audioPlayer.stopMusic();
     }
 

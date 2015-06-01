@@ -49,8 +49,13 @@ public class AboutText {
     }
 
     public void draw(Canvas canvas) {
-        drawText(canvas, mainText, 50, x, y);
-        if (subText != null) drawText(canvas, subText, 40, x, y + 50);
+        float mainY, subY;
+        mainY = y;
+        subY = y + 50;
+        if (subText == null) mainY = y + 25;
+
+        drawText(canvas, mainText, 50, x, mainY);
+        if (subText != null) drawText(canvas, subText, 40, x, subY);
     }
 
     private void drawText(Canvas canvas, String text, int textSize, float x, float y) {

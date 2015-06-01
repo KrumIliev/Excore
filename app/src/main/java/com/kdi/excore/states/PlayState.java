@@ -18,7 +18,7 @@ import com.kdi.excore.game.Game;
 import com.kdi.excore.states.substates.GameOverState;
 import com.kdi.excore.states.substates.PauseState;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
-import com.kdi.excore.utils.Utils;
+import com.kdi.excore.utils.ColorUtils;
 import com.kdi.excore.xfx.AudioPlayer;
 
 import java.util.ArrayList;
@@ -48,7 +48,6 @@ public class PlayState extends State {
     private int waveNumber;
     private boolean waveStart;
     private int waveDelay = 2000;
-    private boolean survivalWaveStart;
 
     public long slowTimer;
     private long slowDiff;
@@ -111,7 +110,7 @@ public class PlayState extends State {
         explosions = new ArrayList<>();
         powerUps = new ArrayList<>();
         subtitles = new ArrayList<>();
-        nextWave = new ColorAnimation(game, Utils.getRandomColor(false));
+        nextWave = new ColorAnimation(game, ColorUtils.getRandomColor(false));
 
         int pauseWidth = 120;
         int pauseHeight = 40;
@@ -230,7 +229,7 @@ public class PlayState extends State {
             if (remove) {
                 showNextWaveAnimation = false;
                 background = nextWave.color;
-                nextWave.reset(Utils.getRandomColor(false));
+                nextWave.reset(ColorUtils.getRandomColor(false));
             }
         }
     }
@@ -251,7 +250,10 @@ public class PlayState extends State {
             if (enemy.dead) {
                 addPowerUp(enemy);
 
-                player.addScore(((enemy.type + enemy.rank) * 6) * scoreMultiplier);
+                int typeMultiplier = 6;
+                if (enemy.type == Enemy.TYPE_BOSS) typeMultiplier = 16;
+                int waveMultiplier = waveNumber / 10 + 1;
+                player.addScore((((enemy.type + enemy.rank) * typeMultiplier) * waveMultiplier) * scoreMultiplier);
 
                 enemies.remove(i);
                 i--;
@@ -523,6 +525,7 @@ public class PlayState extends State {
             game.paint.setTypeface(game.tf);
             game.paint.setTextSize(50);
             String s = "-   W A V E   " + waveNumber + "   -";
+            if (waveNumber % 10 == 0) s = "-   B O S S   -";
             float length = game.paint.measureText(s);
             int alpha = (int) (255 * Math.sin(3.14 * waveStartTimerDiff / waveDelay));
             if (alpha > 255) alpha = 255;
@@ -658,24 +661,23 @@ public class PlayState extends State {
         Random random = new Random();
         int wave = waveNumber % 10;
         if (waveNumber < 10) wave = waveNumber;
-        double multiplier = waveNumber / 10;
-        if (multiplier < 1) multiplier = 1;
+        double multiplier = waveNumber / 10 + 1;
 
         Log.d("Wave", "Multi: " + multiplier);
 
         if (wave == 0) {
-            enemies.add(new Enemy(game, this, random.nextInt(4) + 1, 4, multiplier, true));
+            addEnemy(new Enemy(game, this, Enemy.TYPE_BOSS, 4, multiplier));
         } else if (wave >= 1 && wave <= 3) {
             for (int i = 0; i < maxTypeOneWave; i++) {
-                enemies.add(new Enemy(game, this, random.nextInt(4) + 1, 1, multiplier, false));
+                addEnemy(new Enemy(game, this, random.nextInt(4) + 1, 1, multiplier));
             }
         } else if (wave >= 4 && wave <= 6) {
             for (int i = 0; i < maxTypeTwoWave; i++) {
-                enemies.add(new Enemy(game, this, random.nextInt(4) + 1, 2, multiplier, false));
+                addEnemy(new Enemy(game, this, random.nextInt(4) + 1, 2, multiplier));
             }
         } else {
             for (int i = 0; i < maxTypeThreeWave; i++) {
-                enemies.add(new Enemy(game, this, random.nextInt(4) + 1, 3, multiplier, false));
+                addEnemy(new Enemy(game, this, random.nextInt(4) + 1, 3, multiplier));
             }
         }
     }

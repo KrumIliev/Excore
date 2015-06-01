@@ -8,11 +8,10 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.kdi.excore.R;
-import com.kdi.excore.states.menu.MainMenuState;
 import com.kdi.excore.states.StateManager;
+import com.kdi.excore.states.menu.MainMenuState;
+import com.kdi.excore.utils.ColorUtils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
-import com.kdi.excore.utils.Utils;
 import com.kdi.excore.xfx.AudioPlayer;
 
 /**
@@ -48,11 +47,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         setFocusable(true);
 
         preferences = new ExcoreSharedPreferences(getContext());
-        background = Utils.getRandomColor(false);
+        background = ColorUtils.getRandomColor(false);
 
         tf = Typeface.createFromAsset(getContext().getAssets(), "font.ttf");
         audioPlayer = new AudioPlayer(getContext());
-        audioPlayer.playMusic(R.raw.track_1);
+        audioPlayer.playMusic();
 
         paint = new Paint();
         paint.setAntiAlias(true);
@@ -65,7 +64,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         width = getWidth();
         height = getHeight();
 
-        stateManager.push(new MainMenuState(stateManager, this, Utils.getRandomColor(false)));
+        stateManager.push(new MainMenuState(stateManager, this, ColorUtils.getRandomColor(false)));
 
         running = true;
         gameThread = new Thread(this);

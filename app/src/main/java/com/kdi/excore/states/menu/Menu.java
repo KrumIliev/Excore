@@ -10,7 +10,7 @@ import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.State;
 import com.kdi.excore.states.StateManager;
-import com.kdi.excore.utils.Utils;
+import com.kdi.excore.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -35,7 +35,7 @@ public abstract class Menu extends State {
         alpha = 0;
         objects = new ArrayList<>();
         initObjects(objects, objectsType);
-        anim = new ColorAnimation(game, Utils.getRandomColor(false));
+        anim = new ColorAnimation(game, ColorUtils.getRandomColor(false));
     }
 
     @Override
@@ -96,9 +96,9 @@ public abstract class Menu extends State {
         Random random = new Random();
         for (int i = 0; i < 9; i++) {
             if (i % 2 == 0) {
-                objects.add(new Enemy(game, this, type, 1, -20, random.nextInt(game.height), 1, false));
+                objects.add(new Enemy(game, this, type, 1, -20, random.nextInt(game.height), 1));
             } else {
-                objects.add(new Enemy(game, this, type, 1, game.width + 20, random.nextInt(game.height), 1, false));
+                objects.add(new Enemy(game, this, type, 1, game.width + 20, random.nextInt(game.height), 1));
             }
         }
     }
