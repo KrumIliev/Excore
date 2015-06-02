@@ -3,6 +3,12 @@
     package="com.kdi.excore"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <supports-screens
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="false"
+        android:xlargeScreens="true"/>
+
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="true"
