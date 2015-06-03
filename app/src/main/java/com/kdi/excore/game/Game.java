@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -65,6 +66,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         height = getHeight();
 
         stateManager.push(new MainMenuState(stateManager, this, ColorUtils.getRandomColor(false)));
+        preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
 
         running = true;
         gameThread = new Thread(this);
@@ -72,10 +74,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) { dispose(); }
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        dispose();
+    }
 
     public void dispose() {
         audioPlayer.dispose();
@@ -93,10 +98,17 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            stateManager.handleInput(event.getX(), event.getY());
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                stateManager.handleInput(event.getX(), event.getY());
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (preferences.getSetting(ExcoreSharedPreferences.KEY_MOVE)) {
+                    stateManager.handleInput(event.getX(), event.getY());
+                }
+                break;
         }
-        return super.onTouchEvent(event);
+        return true;
     }
 
     public void update() {

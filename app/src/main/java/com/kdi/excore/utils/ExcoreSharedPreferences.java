@@ -13,6 +13,7 @@ public class ExcoreSharedPreferences {
     public static final String KEY_MUSIC = "music";
     public static final String KEY_SOUND = "sound";
     public static final String KEY_SUBS = "subs";
+    public static final String KEY_MOVE = "move";
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;

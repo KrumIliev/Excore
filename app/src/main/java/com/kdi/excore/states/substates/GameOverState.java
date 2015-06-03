@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
+import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.xfx.AudioPlayer;
 
 /**
@@ -35,6 +36,8 @@ public class GameOverState extends Substate {
     private long yesTimer;
     private long yesDiff;
 
+    private boolean initialUpdate = true;
+
     private CountDownTimer timer = new CountDownTimer(10000, 1000) {
         @Override
         public void onTick(long l) {
@@ -59,6 +62,7 @@ public class GameOverState extends Substate {
         color = Color.argb(210, 255, 0, 0);
         timeIsRunning = false;
         init();
+        game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
     }
 
     private void init() {
@@ -106,6 +110,12 @@ public class GameOverState extends Substate {
         if (yesTimer != 0) {
             yesDiff = (System.nanoTime() - yesTimer) / 1000000;
             if (yesDiff > 100) yesTimer = 0;
+            game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, true);
+        }
+
+        if (initialUpdate) {
+            game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
+            initialUpdate = false;
         }
 
         return super.update();
@@ -194,5 +204,7 @@ public class GameOverState extends Substate {
         timer.cancel();
         timeIsRunning = false;
         timerString = "10";
+        game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, true);
+        initialUpdate = true;
     }
 }

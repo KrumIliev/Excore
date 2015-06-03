@@ -96,6 +96,7 @@ public class PlayState extends State {
         this.mode = mode;
         init();
         if (mode == MODE_TIME_ATTACK) initTimer();
+        game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, true);
     }
 
     private void init() {
@@ -645,6 +646,7 @@ public class PlayState extends State {
         } else if (player.dead) {
             gameOver.handleInput(x, y);
         } else if (pauseButton.contains((int) x, (int) y)) {
+            game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             pauseTimer = System.nanoTime();
         } else {
