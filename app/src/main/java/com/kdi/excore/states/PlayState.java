@@ -1,13 +1,10 @@
 package com.kdi.excore.states;
 
-import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import com.kdi.excore.animations.ColorAnimation;
@@ -20,8 +17,8 @@ import com.kdi.excore.entities.Subtitle;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.substates.GameOverState;
 import com.kdi.excore.states.substates.PauseState;
-import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.xfx.AudioPlayer;
 
 import java.util.ArrayList;
@@ -663,11 +660,11 @@ public class PlayState extends State {
         } else if (rand < 0.020)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_DESTROY, enemy.x, enemy.y));
         else if (rand < 0.050)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_IMMORTALITY, enemy.x, enemy.y));
+            powerUps.add(new PowerUp(game, PowerUp.TYPE_POWER, enemy.x, enemy.y));
         else if (rand < 0.070)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_DOUBLE_SCORE, enemy.x, enemy.y));
         else if (rand < 0.100)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_POWER, enemy.x, enemy.y));
+            powerUps.add(new PowerUp(game, PowerUp.TYPE_IMMORTALITY, enemy.x, enemy.y));
         else if (rand < 0.120)
             powerUps.add(new PowerUp(game, PowerUp.TYPE_FASTER_ENEMY, enemy.x, enemy.y));
         else if (rand < 0.130)

@@ -5,6 +5,7 @@ import android.graphics.Rect;
 
 import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
+import com.kdi.excore.states.BasicsState;
 import com.kdi.excore.states.PlayState;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.xfx.AudioPlayer;
@@ -18,23 +19,29 @@ public class SelectModeState extends Menu {
     private Rect hardcore;
     private Rect time;
     private Rect back;
+    private Rect basics;
 
     private String sNormal;
     private String sHardcore;
     private String sTime;
     private String sBack;
+    private String sBasics;
 
     private String subHardcore;
     private String subTime;
+    private String subBasics;
 
     private long normalTimer;
     private long normalDiff;
 
-    private long harcoreTimer;
-    private long harcoreDiff;
+    private long hardcoreTimer;
+    private long hardcoreDiff;
 
     private long attackTimer;
     private long attackDiff;
+
+    private long basicsTimer;
+    private long basicsDiff;
 
     private long backTimer;
     private long backDiff;
@@ -53,9 +60,9 @@ public class SelectModeState extends Menu {
             if (normalDiff > flashInterval) normalTimer = 0;
         }
 
-        if (harcoreTimer != 0) {
-            harcoreDiff = (System.nanoTime() - harcoreTimer) / 1000000;
-            if (harcoreDiff > flashInterval) harcoreTimer = 0;
+        if (hardcoreTimer != 0) {
+            hardcoreDiff = (System.nanoTime() - hardcoreTimer) / 1000000;
+            if (hardcoreDiff > flashInterval) hardcoreTimer = 0;
         }
 
         if (attackTimer != 0) {
@@ -66,6 +73,11 @@ public class SelectModeState extends Menu {
         if (backTimer != 0) {
             backDiff = (System.nanoTime() - backTimer) / 1000000;
             if (backDiff > flashInterval) backTimer = 0;
+        }
+
+        if (basicsTimer != 0) {
+            basicsDiff = (System.nanoTime() - basicsTimer) / 1000000;
+            if (basicsDiff > flashInterval) basicsTimer = 0;
         }
     }
 
@@ -81,7 +93,7 @@ public class SelectModeState extends Menu {
         }
 
         if (hardcore.contains((int) x, (int) y)) {
-            harcoreTimer = System.nanoTime();
+            hardcoreTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             nextState = new PlayState(stateManager, game, anim.color, PlayState.MODE_HARDCORE);
             showAnim = true;
@@ -91,6 +103,13 @@ public class SelectModeState extends Menu {
             attackTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             nextState = new PlayState(stateManager, game, anim.color, PlayState.MODE_TIME_ATTACK);
+            showAnim = true;
+        }
+
+        if (basics.contains((int) x, (int) y)) {
+            basicsTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
+            nextState = new BasicsState(stateManager, game, anim.color);
             showAnim = true;
         }
 
@@ -110,11 +129,13 @@ public class SelectModeState extends Menu {
         drawButton(canvas, hardcore, sHardcore, subHardcore, 40);
         drawButton(canvas, time, sTime, subTime, 40);
         drawButton(canvas, back, sBack, null, 40);
+        drawButton(canvas, basics, sBasics, subBasics, 40);
 
         flashButton(canvas, normal, normalTimer);
-        flashButton(canvas, hardcore, harcoreTimer);
+        flashButton(canvas, hardcore, hardcoreTimer);
         flashButton(canvas, time, attackTimer);
         flashButton(canvas, back, backTimer);
+        flashButton(canvas, basics, basicsTimer);
 
         if (showAnim) anim.draw(canvas);
     }
@@ -126,10 +147,12 @@ public class SelectModeState extends Menu {
         sTime = "- T i m e   A t t a c k -";
         subTime = "I f   t h e   t i m e   e n d s   y o u   e n d";
         sBack = "- B a c k -";
+        sBasics = "- B a s i c s -";
+        subBasics = "H o w   t o   p l a y   a n d   s t u f f   . . .";
 
         int buttonWidth = game.width / 2 + 100;
         int buttonHeight = 100;
-        int buttonVerticalSpace = (game.height - buttonHeight * 4) / 5;
+        int buttonVerticalSpace = (game.height - buttonHeight * 5) / 6;
 
         int left = (game.width - buttonWidth) / 2;
         int right = game.width - left;
@@ -144,6 +167,10 @@ public class SelectModeState extends Menu {
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;
         time = new Rect(left, top, right, bottom);
+
+        top = bottom + buttonVerticalSpace;
+        bottom = top + buttonHeight;
+        basics = new Rect(left, top, right, bottom);
 
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;
