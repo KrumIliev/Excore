@@ -49,9 +49,13 @@ public class PauseState extends Substate {
         int buttonHeight = 100;
         int buttonSpace = 50;
 
+        int numButtons = 3;
+        boolean showNextSongButton = game.preferences.getSetting(ExcoreSharedPreferences.KEY_MUSIC);
+        if (!showNextSongButton) numButtons = 2;
+
         Rect textBounds = new Rect();
         game.paint.getTextBounds(pauseString, 0, pauseString.length(), textBounds);
-        int boundsHeight = buttonHeight * 3 + buttonSpace * 4 + textBounds.height();
+        int boundsHeight = buttonHeight * numButtons + buttonSpace * (numButtons + 1) + textBounds.height();
 
         int left = (game.width - buttonWidth) / 2;
         int right = game.width - left;
@@ -65,9 +69,11 @@ public class PauseState extends Substate {
         top = bottom - buttonHeight;
         buttonExit = new Rect(left, top, right, bottom);
 
-        bottom = top - buttonSpace;
-        top = bottom - buttonHeight;
-        buttonNext = new Rect(left, top, right, bottom);
+        if (showNextSongButton) {
+            bottom = top - buttonSpace;
+            top = bottom - buttonHeight;
+            buttonNext = new Rect(left, top, right, bottom);
+        }
 
         bottom = top - buttonSpace;
         top = bottom - buttonHeight;
@@ -92,11 +98,14 @@ public class PauseState extends Substate {
             showExitAnim = true;
         }
 
-        if (buttonNext.contains((int) x, (int) y)) {
-            nextTimer = System.nanoTime();
-            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
-            game.audioPlayer.nextSong();
+        if (game.preferences.getSetting(ExcoreSharedPreferences.KEY_MUSIC)) {
+            if (buttonNext.contains((int) x, (int) y)) {
+                nextTimer = System.nanoTime();
+                game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
+                game.audioPlayer.nextSong();
+            }
         }
+
     }
 
     @Override
@@ -123,14 +132,16 @@ public class PauseState extends Substate {
     public void draw(Canvas canvas) {
         drawBackground(canvas);
 
+        boolean showNextSong = game.preferences.getSetting(ExcoreSharedPreferences.KEY_MUSIC);
+
         drawPause(canvas);
         drawButton(canvas, buttonResume, resumeString);
         drawButton(canvas, buttonExit, exitString);
-        drawButton(canvas, buttonNext, nextString);
+        if (showNextSong) drawButton(canvas, buttonNext, nextString);
 
         flashButton(canvas, buttonResume, resumeTimer);
         flashButton(canvas, buttonExit, exitTimer);
-        flashButton(canvas, buttonNext, nextTimer);
+        if (showNextSong) flashButton(canvas, buttonNext, nextTimer);
 
         if (showExitAnim) exitAnim.draw(canvas);
     }
