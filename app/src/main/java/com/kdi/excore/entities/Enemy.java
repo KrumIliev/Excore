@@ -8,6 +8,7 @@ import com.kdi.excore.game.Game;
 import com.kdi.excore.states.PlayState;
 import com.kdi.excore.states.State;
 import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.ExcoreSharedPreferences;
 
 import java.util.Random;
 
@@ -40,6 +41,8 @@ public class Enemy extends Entity {
     private State state;
 
     public double multiplier;
+
+    public int colorAlpha = 200;
 
     public Enemy(Game gameView, State state, int type, int rank, double multiplier) {
         this.type = type;
@@ -170,36 +173,38 @@ public class Enemy extends Entity {
     }
 
     private void setBaseStats() {
+        boolean low = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS);
+
         if (type == TYPE_NORMAL) {
-            color = Color.BLUE;
+            color = low ? Color.BLUE : Color.argb(colorAlpha, 0, 0, 255);
             speed = 2;
             r = 15;
             health = 1;
         }
 
         if (type == TYPE_FAST) {
-            color = Color.GREEN;
+            color = low ? Color.GREEN : Color.argb(colorAlpha, 0, 255, 0);
             speed = 3;
             r = 20;
             health = 2;
         }
 
         if (type == TYPE_STRONG) {
-            color = Color.MAGENTA;
+            color = low ? Color.MAGENTA : Color.argb(colorAlpha, 255, 0, 255);
             speed = 1.5;
             r = 30;
             health = 5;
         }
 
         if (type == TYPE_IMMUNE) {
-            color = Color.YELLOW;
+            color = low ? Color.YELLOW : Color.argb(colorAlpha, 255, 255, 0);
             speed = 2;
             r = 20;
             health = 2;
         }
 
         if (type == TYPE_BOSS) {
-            color = ColorUtils.getRandomColor();
+            color = ColorUtils.getRandomFullColor(!low);
             speed = 2;
             Random random = new Random();
             r = random.nextInt(30 - 15) + 15;

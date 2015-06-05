@@ -103,6 +103,7 @@ public abstract class Menu extends State {
     }
 
     protected void initObjects(ArrayList objects, int type) {
+        objects.clear();
         Random random = new Random();
         for (int i = 0; i < 9; i++) {
             if (i % 2 == 0) {

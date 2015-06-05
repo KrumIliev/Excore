@@ -10,6 +10,7 @@ import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.states.menu.MainMenuState;
 import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.ExcoreSharedPreferences;
 
 /**
  * Created by Krum Iliev on 5/29/2015.
@@ -43,7 +44,7 @@ public abstract class Substate {
         maxR = game.getWidth() / 2 > game.getHeight() / 2 ? game.getWidth() / 2 : game.getHeight() / 2;
         maxR = maxR + 110;
 
-        color = ColorUtils.getRandomColor(true);
+        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? ColorUtils.getRandomColor(false) : ColorUtils.getRandomColor(true);
         r = 1;
 
         close = false;
@@ -113,7 +114,7 @@ public abstract class Substate {
         r = 1;
         close = false;
         expand = true;
-        color = ColorUtils.getRandomColor(true);
+        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? ColorUtils.getRandomColor(false) : ColorUtils.getRandomColor(true);
         alpha = 0;
     }
 }

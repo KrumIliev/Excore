@@ -17,16 +17,19 @@ public class OptionsState extends Menu {
     private Rect musicButton;
     private Rect soundButton;
     private Rect subsButton;
+    private Rect transButton;
     private Rect backButton;
 
     private String musicON, musicOFF;
     private String soundON, soundOFF;
     private String subsON, subsOFF, subsWTF;
+    private String transON, transOFF, transSub;
     private String back;
 
     private boolean musicState;
     private boolean soundState;
     private boolean subsState;
+    private boolean transState;
 
     private long musicTimer;
     private long musicDiff;
@@ -37,6 +40,9 @@ public class OptionsState extends Menu {
     private long subsTimer;
     private long subsDiff;
 
+    private long transTimer;
+    private long transDiff;
+
     private long backTimer;
     private long backDiff;
 
@@ -46,6 +52,7 @@ public class OptionsState extends Menu {
         musicState = game.preferences.getSetting(ExcoreSharedPreferences.KEY_MUSIC);
         soundState = game.preferences.getSetting(ExcoreSharedPreferences.KEY_SOUND);
         subsState = game.preferences.getSetting(ExcoreSharedPreferences.KEY_SUBS);
+        transState = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS);
 
         initButtons();
     }
@@ -74,6 +81,13 @@ public class OptionsState extends Menu {
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             subsState ^= true;
             game.preferences.setSetting(ExcoreSharedPreferences.KEY_SUBS, subsState);
+        }
+
+        if (transButton.contains((int) x, (int) y)) {
+            transTimer = System.nanoTime();
+            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
+            transState ^= true;
+            game.preferences.setSetting(ExcoreSharedPreferences.KEY_TRANS, transState);
         }
 
         if (backButton.contains((int) x, (int) y)) {
@@ -108,6 +122,11 @@ public class OptionsState extends Menu {
             if (subsDiff > flashInterval) subsTimer = 0;
         }
 
+        if (transTimer != 0) {
+            transDiff = (System.nanoTime() - transTimer) / 1000000;
+            if (transDiff > flashInterval) transTimer = 0;
+        }
+
         if (backTimer != 0) {
             backDiff = (System.nanoTime() - backTimer) / 1000000;
             if (backDiff > flashInterval) backTimer = 0;
@@ -133,12 +152,18 @@ public class OptionsState extends Menu {
         else
             drawButton(canvas, subsButton, subsOFF, subsWTF, 30);
 
+        if (transState)
+            drawButton(canvas, transButton, transON, transSub, 30);
+        else
+            drawButton(canvas, transButton, transOFF, transSub, 30);
+
         drawButton(canvas, backButton, back, null, 30);
 
         flashButton(canvas, musicButton, musicTimer);
         flashButton(canvas, soundButton, soundTimer);
         flashButton(canvas, subsButton, subsTimer);
         flashButton(canvas, backButton, backTimer);
+        flashButton(canvas, transButton, transTimer);
 
         if (showAnim) anim.draw(canvas);
     }
@@ -152,10 +177,13 @@ public class OptionsState extends Menu {
         subsOFF = " - S U B T I T L E S     O F F -";
         subsWTF = "L o l   w u t ?";
         back = "- B A C K -";
+        transON = "- D E T A I L S     L O W -";
+        transOFF = "- D E T A I L S     H I G H -";
+        transSub = "N o   t r a n s p a r e n c y   o n   l o w";
 
         int buttonWidth = game.width / 2 + 100;
         int buttonHeight = 100;
-        int buttonVerticalSpace = (game.height - (buttonHeight * 4)) / 5;
+        int buttonVerticalSpace = (game.height - (buttonHeight * 5)) / 6;
 
         int left = (game.width - buttonWidth) / 2;
         int right = game.width - left;
@@ -170,6 +198,10 @@ public class OptionsState extends Menu {
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;
         subsButton = new Rect(left, top, right, bottom);
+
+        top = bottom + buttonVerticalSpace;
+        bottom = top + buttonHeight;
+        transButton = new Rect(left, top, right, bottom);
 
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;

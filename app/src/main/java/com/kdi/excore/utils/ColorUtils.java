@@ -15,8 +15,9 @@ public class ColorUtils {
         return Color.argb(alpha, rnd.nextInt(150), rnd.nextInt(150), rnd.nextInt(150));
     }
 
-    public static int getRandomColor() {
+    public static int getRandomFullColor(boolean transparent) {
         Random rnd = new Random();
-        return Color.argb(255, rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255));
+        int alpha = transparent ? 200 : 255;
+        return Color.argb(alpha, rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255));
     }
 }

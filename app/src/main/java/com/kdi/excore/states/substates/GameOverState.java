@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
+import com.kdi.excore.utils.ColorUtils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.xfx.AudioPlayer;
 
@@ -59,7 +60,7 @@ public class GameOverState extends Substate {
 
     public GameOverState(Game game, StateManager stateManager) {
         super(game, stateManager);
-        color = Color.argb(210, 255, 0, 0);
+        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Color.argb(255, 255, 0, 0) : Color.argb(210, 255, 0, 0);
         timeIsRunning = false;
         init();
         game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
@@ -200,7 +201,7 @@ public class GameOverState extends Substate {
     @Override
     public void reset() {
         super.reset();
-        color = Color.argb(210, 255, 0, 0);
+        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Color.argb(255, 255, 0, 0) : Color.argb(210, 255, 0, 0);
         timer.cancel();
         timeIsRunning = false;
         timerString = "10";
