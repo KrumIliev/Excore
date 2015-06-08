@@ -65,7 +65,7 @@ public abstract class Menu extends State {
             enemy.draw(canvas);
     }
 
-    protected void drawButton(Canvas canvas, Rect button, String text, String subtext, int textSize) {
+    protected void drawButton(Canvas canvas, Rect button, String text, String subtext) {
         game.paint.setStyle(Paint.Style.STROKE);
         game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setStrokeWidth(2);
@@ -73,7 +73,7 @@ public abstract class Menu extends State {
         game.resetPaint();
 
         game.paint.setTypeface(game.tf);
-        game.paint.setTextSize(textSize);
+        game.paint.setTextSize(30);
         game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setTextAlign(Paint.Align.CENTER);
         int centerY = ((button.bottom - button.top) / 2) + button.top;

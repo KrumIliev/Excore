@@ -8,7 +8,7 @@ import com.kdi.excore.game.Game;
 /**
  * Created by Krum Iliev on 5/30/2015.
  */
-public class AboutText {
+public class CreditsText {
 
     public float x;
     public float y;
@@ -20,7 +20,7 @@ public class AboutText {
 
     public Game game;
 
-    public AboutText(Game game, String mainText, String subText) {
+    public CreditsText(Game game, String mainText, String subText) {
         this.game = game;
         this.mainText = mainText;
         this.subText = subText;
@@ -54,8 +54,8 @@ public class AboutText {
         subY = y + 50;
         if (subText == null) mainY = y + 25;
 
-        drawText(canvas, mainText, 50, x, mainY);
-        if (subText != null) drawText(canvas, subText, 40, x, subY);
+        drawText(canvas, mainText, 40, x, mainY);
+        if (subText != null) drawText(canvas, subText, 35, x, subY);
     }
 
     private void drawText(Canvas canvas, String text, int textSize, float x, float y) {

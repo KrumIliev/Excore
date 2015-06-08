@@ -64,6 +64,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
     public void surfaceCreated(SurfaceHolder holder) {
         width = getWidth();
         height = getHeight();
+        Log.d("Game", "Width: " + width + " Height: " + height);
 
         stateManager.push(new MainMenuState(stateManager, this, ColorUtils.getRandomColor(false)));
         preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
@@ -71,6 +72,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         running = true;
         gameThread = new Thread(this);
         gameThread.start();
+        gameThread.setPriority(Thread.MAX_PRIORITY);
     }
 
     @Override

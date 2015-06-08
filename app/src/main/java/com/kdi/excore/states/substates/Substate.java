@@ -65,10 +65,14 @@ public abstract class Substate {
 
     public boolean update() {
         if (close) {
-            r -= 5;
+            if (game.height > 1000) r -= 10;
+            else r -= 5;
             if (r <= 1) return true;
         } else {
-            if (expand) r += 5;
+            if (expand) {
+                if (game.height > 1000) r += 10;
+                else r += 5;
+            }
             if (r > maxR / 2) {
                 alpha += 3;
                 if (alpha > 255) alpha = 255;

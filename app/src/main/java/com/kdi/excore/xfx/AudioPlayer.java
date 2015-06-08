@@ -6,7 +6,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
-import android.util.Log;
 
 import com.kdi.excore.R;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
@@ -80,7 +79,7 @@ public class AudioPlayer {
         soundIds[POWER_UP_SCORE] = soundPool.load(context, R.raw.p_score, 1);
         soundIds[SOUND_WEAPON_DISCHARGE] = soundPool.load(context, R.raw.discharge, 1);
 
-        musicIds = new int[13];
+        musicIds = new int[14];
         musicIds[0] = R.raw.track_1;
         musicIds[1] = R.raw.track_3;
         musicIds[2] = R.raw.track_4;
@@ -94,11 +93,14 @@ public class AudioPlayer {
         musicIds[10] = R.raw.track_12;
         musicIds[11] = R.raw.track_13;
         musicIds[12] = R.raw.track_14;
+        musicIds[13] = R.raw.track_2;
         shuffleMusic(musicIds);
     }
 
     public void playMusic() {
         if (preferences.getSetting(ExcoreSharedPreferences.KEY_MUSIC)) {
+            if (mediaPlayer != null) mediaPlayer.release();
+            if (currentIndex > 13) currentIndex = 0;
             mediaPlayer = MediaPlayer.create(context, musicIds[currentIndex]);
             mediaPlayer.setLooping(false);
             mediaPlayer.setVolume(50, 50);
@@ -106,33 +108,13 @@ public class AudioPlayer {
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
-                    Log.d("AudioPlayer", "Song end");
-                    nextSong();
+                    currentIndex++;
+                    playMusic();
                 }
             });
 
             mediaPlayer.start();
         }
-    }
-
-    public void nextSong() {
-        Log.d("AudioPlayer", "Next song");
-        mediaPlayer.release();
-        currentIndex++;
-        if (currentIndex > 12) currentIndex = 0;
-        mediaPlayer = MediaPlayer.create(context, musicIds[currentIndex]);
-        mediaPlayer.setLooping(false);
-        mediaPlayer.setVolume(50, 50);
-
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                Log.d("AudioPlayer", "Song end");
-                nextSong();
-            }
-        });
-
-        mediaPlayer.start();
     }
 
     public void stopMusic() {

@@ -90,7 +90,7 @@ public class PlayState extends State {
     public int mode;
 
     private String countdownTimerString;
-    private long countdownTimerLength = 40000;
+    private long countdownTimerLength = 30000;
     private long countdownTimer;
     private long countdownDiff;
 
@@ -205,7 +205,7 @@ public class PlayState extends State {
             boolean remove = exitAnim.update();
             if (remove) {
                 showExitAnim = false;
-                stateManager.setState(new GameOverState(stateManager, game, player.score, waveNumber, player.enemiesCount));
+                stateManager.setState(new GameOverState(stateManager, game, player.score, waveNumber, player.enemiesKilled));
             }
         }
     }
@@ -272,7 +272,7 @@ public class PlayState extends State {
                 if (enemy.type == Enemy.TYPE_BOSS) typeMultiplier = 16;
                 int waveMultiplier = waveNumber / 10 + 1;
                 player.addScore((((enemy.type + enemy.rank) * typeMultiplier) * waveMultiplier) * scoreMultiplier);
-
+                player.enemiesKilled++;
                 game.audioPlayer.playSound(AudioPlayer.ENEMY_DEAD);
 
                 enemies.remove(i);
@@ -606,7 +606,7 @@ public class PlayState extends State {
         game.paint.setTextSize(60);
         game.paint.setTextAlign(Paint.Align.CENTER);
 
-        long reverse = waveNumber % 10 == 0 ? 80 : 40;
+        long reverse = waveNumber % 10 == 0 ? (countdownTimerLength * 2) / 1000 : countdownTimerLength / 1000;
         long time = reverse - countdownDiff / 1000;
         if (time >= 10) {
             countdownTimerString = "" + time;

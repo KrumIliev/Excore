@@ -125,11 +125,11 @@ public class SelectModeState extends Menu {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        drawButton(canvas, normal, sNormal, null, 40);
-        drawButton(canvas, hardcore, sHardcore, subHardcore, 40);
-        drawButton(canvas, time, sTime, subTime, 40);
-        drawButton(canvas, back, sBack, null, 40);
-        drawButton(canvas, basics, sBasics, subBasics, 40);
+        drawButton(canvas, normal, sNormal, null);
+        drawButton(canvas, hardcore, sHardcore, subHardcore);
+        drawButton(canvas, time, sTime, subTime);
+        drawButton(canvas, back, sBack, null);
+        drawButton(canvas, basics, sBasics, subBasics);
 
         flashButton(canvas, normal, normalTimer);
         flashButton(canvas, hardcore, hardcoreTimer);

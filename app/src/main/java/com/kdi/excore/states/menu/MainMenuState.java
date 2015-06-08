@@ -6,7 +6,7 @@ import android.graphics.Rect;
 import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
-import com.kdi.excore.states.about.AboutState;
+import com.kdi.excore.states.about.CreditsState;
 import com.kdi.excore.xfx.AudioPlayer;
 
 /**
@@ -68,7 +68,7 @@ public class MainMenuState extends Menu {
         if (aboutButton.contains((int) x, (int) y)) {
             aboutTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
-            nextState = new AboutState(stateManager, game, anim.color);
+            nextState = new CreditsState(stateManager, game, anim.color);
             showAnim = true;
         }
     }
@@ -102,10 +102,10 @@ public class MainMenuState extends Menu {
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
-        drawButton(canvas, playButton, strPlay, null, 40);
-        drawButton(canvas, rankButton, strRank, null, 40);
-        drawButton(canvas, optionButton, strOptions, null, 40);
-        drawButton(canvas, aboutButton, strAbout, null, 40);
+        drawButton(canvas, playButton, strPlay, null);
+        drawButton(canvas, rankButton, strRank, null);
+        drawButton(canvas, optionButton, strOptions, null);
+        drawButton(canvas, aboutButton, strAbout, null);
 
         flashButton(canvas, playButton, playTimer);
         flashButton(canvas, rankButton, rankTimer);

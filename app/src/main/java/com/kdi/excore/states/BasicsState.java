@@ -12,6 +12,7 @@ import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.menu.SelectModeState;
 import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.xfx.AudioPlayer;
 
 /**
  * Created by Krum Iliev on 6/3/2015.
@@ -191,6 +192,7 @@ public class BasicsState extends State {
     @Override
     public void handleInput(float x, float y) {
         if (showAnim) return;
+        game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
         showAnim = true;
     }
 }

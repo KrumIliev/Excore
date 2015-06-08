@@ -101,7 +101,7 @@ public class ContinueState extends Substate {
                 continueDiff = (System.nanoTime() - continueTimer) / 1000000;
                 if (continueDiff > continueLength) {
                     continueTimer = 0;
-                    nextState = new GameOverState(stateManager, game, platState.player.score, platState.waveNumber, platState.player.enemiesCount);
+                    nextState = new GameOverState(stateManager, game, platState.player.score, platState.waveNumber, platState.player.enemiesKilled);
                     showExitAnim = true;
                 }
             }
@@ -140,7 +140,7 @@ public class ContinueState extends Substate {
 
         if (noButton.contains((int) x, (int) y)) {
             noTimer = System.nanoTime();
-            nextState = new GameOverState(stateManager, game, platState.player.score, platState.waveNumber, platState.player.enemiesCount);
+            nextState = new GameOverState(stateManager, game, platState.player.score, platState.waveNumber, platState.player.enemiesKilled);
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             showExitAnim = true;
             continueTimer = 0;

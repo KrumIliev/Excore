@@ -137,7 +137,7 @@ public class GameOverState extends State {
             if (alphaScore > 255) alphaScore = 255;
             if (alphaScore == 255) {
                 if (addScore) {
-                    total += (scoreMultiplier * score);
+                    total += score;
                     addScore = false;
                 }
             }
@@ -185,7 +185,7 @@ public class GameOverState extends State {
             alphaScore = 255;
             visibleScore = score;
             visibleEnemies = enemies;
-            visibleTotal = scoreMultiplier * score + wave * enemies;
+            visibleTotal = score + wave * enemies;
         }
     }
 

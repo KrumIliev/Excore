@@ -31,5 +31,4 @@ public class ExcoreSharedPreferences {
     public boolean getSetting(String key) {
         return preferences.getBoolean(key, true);
     }
-
 }

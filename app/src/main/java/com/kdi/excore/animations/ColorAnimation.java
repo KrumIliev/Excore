@@ -28,7 +28,8 @@ public class ColorAnimation {
     }
 
     public boolean update() {
-        r += 5;
+        if (game.height > 1000) r += 10;
+        else r += 5;
         if (r >= maxR) return true;
         return false;
     }

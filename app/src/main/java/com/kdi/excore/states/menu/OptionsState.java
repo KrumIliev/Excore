@@ -138,26 +138,26 @@ public class OptionsState extends Menu {
         super.draw(canvas);
 
         if (musicState)
-            drawButton(canvas, musicButton, musicON, null, 30);
+            drawButton(canvas, musicButton, musicON, null);
         else
-            drawButton(canvas, musicButton, musicOFF, null, 30);
+            drawButton(canvas, musicButton, musicOFF, null);
 
         if (soundState)
-            drawButton(canvas, soundButton, soundON, null, 30);
+            drawButton(canvas, soundButton, soundON, null);
         else
-            drawButton(canvas, soundButton, soundOFF, null, 30);
+            drawButton(canvas, soundButton, soundOFF, null);
 
         if (subsState)
-            drawButton(canvas, subsButton, subsON, subsWTF, 30);
+            drawButton(canvas, subsButton, subsON, subsWTF);
         else
-            drawButton(canvas, subsButton, subsOFF, subsWTF, 30);
+            drawButton(canvas, subsButton, subsOFF, subsWTF);
 
         if (transState)
-            drawButton(canvas, transButton, transON, null, 30);
+            drawButton(canvas, transButton, transON, null);
         else
-            drawButton(canvas, transButton, transOFF, null, 30);
+            drawButton(canvas, transButton, transOFF, null);
 
-        drawButton(canvas, backButton, back, null, 30);
+        drawButton(canvas, backButton, back, null);
 
         flashButton(canvas, musicButton, musicTimer);
         flashButton(canvas, soundButton, soundTimer);
