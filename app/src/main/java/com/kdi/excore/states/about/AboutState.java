@@ -7,7 +7,6 @@ import com.kdi.excore.game.Game;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.states.menu.MainMenuState;
 import com.kdi.excore.states.menu.Menu;
-import com.kdi.excore.xfx.AudioPlayer;
 
 import java.util.ArrayList;
 

@@ -49,6 +49,8 @@ public class Player {
     private long dischargeTimer;
     private long dischargeDiff;
 
+    public int enemiesCount = 0;
+
     public Player(Game gameView, State state) {
         this.gameView = gameView;
         this.playState = (PlayState) state;
@@ -241,6 +243,7 @@ public class Player {
 
     public void addScore(int i) {
         visibleScore += i;
+        enemiesCount++;
     }
 
     public void increasePower(int i) {
@@ -262,8 +265,8 @@ public class Player {
     }
 
     public void continueGame() {
-        score = 0;
-        visibleScore = 0;
+        score /= 2;
+        visibleScore = score;
         lives = 3;
         dead = false;
         recovering = true;

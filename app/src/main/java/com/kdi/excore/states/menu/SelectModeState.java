@@ -141,13 +141,13 @@ public class SelectModeState extends Menu {
     }
 
     private void initButtons() {
-        sNormal = "- N o r m a l -";
-        sHardcore = "- H a r d c o r e -";
+        sNormal = "- N O R M A L -";
+        sHardcore = "- H A R D C O R E -";
         subHardcore = "O n l y   1   l i f e";
-        sTime = "- T i m e   A t t a c k -";
+        sTime = "- T I M E  A T T A C K -";
         subTime = "I f   t h e   t i m e   e n d s   y o u   e n d";
-        sBack = "- B a c k -";
-        sBasics = "- B a s i c s -";
+        sBack = "- B A C K -";
+        sBasics = "- B A S I C S -";
         subBasics = "H o w   t o   p l a y   a n d   s t u f f   . . .";
 
         int buttonWidth = game.width / 2 + 100;

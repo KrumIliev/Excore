@@ -4,208 +4,258 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.CountDownTimer;
+import android.util.Log;
 
+import com.kdi.excore.animations.ColorAnimation;
+import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
+import com.kdi.excore.states.State;
 import com.kdi.excore.states.StateManager;
+import com.kdi.excore.states.menu.MainMenuState;
 import com.kdi.excore.utils.ColorUtils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
-import com.kdi.excore.xfx.AudioPlayer;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
- * Created by Krum Iliev on 5/29/2015.
+ * Created by Krum Iliev on 6/8/2015.
  */
-public class GameOverState extends Substate {
+public class GameOverState extends State {
 
-    private String gameOverString;
-    private String continueString;
-    private String yesString;
-    private String noString;
-    private String continueSubString;
-    private String continueSub2String;
-    private String timerString;
+    private int score;
+    private int wave;
+    private int enemies;
 
-    private Rect bounds;
-    private Rect yesButton;
-    private Rect noButton;
+    private int visibleScore = 0;
+    private int visibleEnemies = 0;
 
-    private boolean timeIsRunning;
+    private int total = 0;
+    private int visibleTotal = 0;
 
-    private long noTimer;
-    private long noDiff;
+    private Rect boundsGame;
+    private Rect boundsWave;
+    private Rect boundsEnemy;
+    private Rect boundsScore;
+    private Rect boundsFinal;
 
-    private long yesTimer;
-    private long yesDiff;
+    private int largeTextHeight;
+    private int smallTextHeight;
 
-    private boolean initialUpdate = true;
+    private String sGameOver;
+    private String sScore;
+    private String sWave;
+    private String sEnemies;
+    private String sFinal;
 
-    private CountDownTimer timer = new CountDownTimer(10000, 1000) {
-        @Override
-        public void onTick(long l) {
-            long seconds = l / 1000;
-            if (seconds == 10) {
-                timerString = "" + seconds;
-            } else {
-                timerString = "0" + seconds;
-            }
+    private int alpha;
+    private int alphaWave;
+    private int alphaScore;
+    private int alphaEnemies;
 
-            if (l <= 700) showExitAnim = true;
-        }
+    private ColorAnimation anim;
+    private boolean showAnim;
 
-        @Override
-        public void onFinish() {
-            showExitAnim = true;
-        }
-    };
+    private boolean addEnemies = true;
+    private boolean addScore = true;
 
-    public GameOverState(Game game, StateManager stateManager) {
-        super(game, stateManager);
-        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Color.argb(255, 255, 0, 0) : Color.argb(210, 255, 0, 0);
-        timeIsRunning = false;
-        init();
+    private boolean canExit = false;
+
+    private ArrayList<Enemy> objects;
+
+    private int scoreMultiplier;
+
+    public GameOverState(StateManager stateManager, Game game, int score, int wave, int enemies) {
+        super(stateManager, game);
+        this.score = score;
+        this.wave = wave;
+        this.enemies = enemies;
+        background = Color.RED;
         game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
+        init();
+
+        Log.d("Game final", "Score: " + score + " Wave: " + wave + " Enemies: " + enemies);
     }
 
     private void init() {
-        gameOverString = "- G A M E   O V E R -";
-        continueString = "- C O N T I N U E -";
-        yesString = "- Y E S -";
-        noString = "- N O -";
-        continueSubString = "C o n t i n u e   a n d   l o s e";
-        continueSub2String = "a l l   y o u r   s c o r e   s o   f a r";
-        timerString = "10";
+        int boundsHeight = game.height / 5;
+        boundsGame = new Rect(0, 0, game.width, boundsHeight);
+        boundsWave = new Rect(0, boundsGame.bottom, game.width, boundsGame.bottom + boundsHeight);
+        boundsEnemy = new Rect(0, boundsWave.bottom, game.width, boundsWave.bottom + boundsHeight);
+        boundsScore = new Rect(0, boundsEnemy.bottom, game.width, boundsEnemy.bottom + boundsHeight);
+        boundsFinal = new Rect(0, boundsScore.bottom, game.width, boundsScore.bottom + boundsHeight);
 
-        int boundsWidth = game.width / 2 + 100;
-        int boundsHeight = game.height / 2 + 100;
+        sGameOver = "- G A M E   O V E R -";
+        sScore = "- G A M E   S C O R E -";
+        sWave = "- W A V E   R E A C H E D -";
+        sEnemies = "- C O R E S   D E S T R O Y E D -";
+        sFinal = "- F I N A L   S C O R E -";
 
-        int left = (game.width - boundsWidth) / 2;
-        int right = game.width - left;
-        int top = (game.height - boundsHeight) / 2;
-        int bottom = game.height - top;
+        alpha = 0;
+        alphaScore = 0;
+        alphaEnemies = 0;
 
-        bounds = new Rect(left, top, right, bottom);
+        anim = new ColorAnimation(game, ColorUtils.getRandomColor(false));
 
-        left = bounds.left;
-        right = bounds.left + bounds.width() / 2 - 25;
-        top = bounds.bottom - 100;
-        bottom = bounds.bottom;
-        noButton = new Rect(left, top, right, bottom);
+        game.paint.setTypeface(game.tf);
+        game.paint.setTextSize(80);
+        Rect bounds = new Rect();
+        game.paint.getTextBounds(sGameOver, 0, sGameOver.length(), bounds);
+        largeTextHeight = bounds.height();
+        game.paint.setTextSize(40);
+        game.paint.getTextBounds(sGameOver, 0, sGameOver.length(), bounds);
+        smallTextHeight = bounds.height();
+        game.resetPaint();
 
-        left = bounds.right - bounds.width() / 2 + 25;
-        right = bounds.right;
-        yesButton = new Rect(left, top, right, bottom);
+        scoreMultiplier = wave / 3;
+        if (scoreMultiplier == 0) scoreMultiplier = 1;
+
+        initObjects();
     }
 
     @Override
-    public boolean update() {
-        if (!close && alpha > 250 && !timeIsRunning) {
-            timeIsRunning = true;
-            timer.start();
+    public void update() {
+        if (!canExit) {
+            alpha += 5;
+            if (alpha > 255) alpha = 255;
+            if (alpha == 255) alphaWave += 3;
+
+            if (alphaWave > 255) alphaWave = 255;
+            if (alphaWave == 255) alphaEnemies += 3;
+
+            if (alphaEnemies > 255) alphaEnemies = 255;
+            if (alphaEnemies > 210 && visibleEnemies < enemies) visibleEnemies += 2;
+            if (visibleEnemies > enemies) visibleEnemies = enemies;
+
+            if (alphaEnemies == 255) {
+                alphaScore += 3;
+                if (addEnemies) {
+                    total += (wave * enemies);
+                    addEnemies = false;
+                }
+            }
+            if (alphaScore > 255) alphaScore = 255;
+            if (alphaScore == 255) {
+                if (addScore) {
+                    total += (scoreMultiplier * score);
+                    addScore = false;
+                }
+            }
+
+            if (alphaScore > 210 && visibleScore < score) {
+                if (score - visibleScore > 1000) visibleScore += 100;
+                else if (score - visibleScore > 100) visibleScore += 10;
+                else visibleScore += 2;
+            }
+            if (visibleScore > score) visibleScore = score;
+
+            if (visibleTotal < total) {
+                if (total - visibleTotal > 1000) visibleTotal += 100;
+                else if (total - visibleTotal > 100) visibleTotal += 10;
+                else visibleTotal += 2;
+            }
+
+            if (visibleTotal > total) visibleTotal = total;
+            if (visibleTotal == total && alphaScore == 255) canExit = true;
         }
 
-        if (noTimer != 0) {
-            noDiff = (System.nanoTime() - noTimer) / 1000000;
-            if (noDiff > 100) noTimer = 0;
-        }
+        for (Enemy enemy : objects)
+            enemy.update();
 
-        if (yesTimer != 0) {
-            yesDiff = (System.nanoTime() - yesTimer) / 1000000;
-            if (yesDiff > 100) yesTimer = 0;
-            game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, true);
+        if (showAnim) {
+            boolean remove = anim.update();
+            if (remove) {
+                showAnim = false;
+                stateManager.setState(new MainMenuState(stateManager, game, anim.color));
+            }
         }
-
-        if (initialUpdate) {
-            game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
-            initialUpdate = false;
-        }
-
-        return super.update();
     }
 
     @Override
     public void handleInput(float x, float y) {
-        if (showExitAnim) return;
-        if (alpha < 180) return;
+        if (showAnim) return;
 
-        if (yesButton.contains((int) x, (int) y)) {
-            yesTimer = System.nanoTime();
-            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
-            close = true;
-        }
-
-        if (noButton.contains((int) x, (int) y)) {
-            noTimer = System.nanoTime();
-            game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
-            showExitAnim = true;
-            timer.cancel();
+        if (canExit) {
+            showAnim = true;
+        } else {
+            canExit = true;
+            alpha = 255;
+            alphaWave = 255;
+            alphaEnemies = 255;
+            alphaScore = 255;
+            visibleScore = score;
+            visibleEnemies = enemies;
+            visibleTotal = scoreMultiplier * score + wave * enemies;
         }
     }
 
     @Override
     public void draw(Canvas canvas) {
-        drawBackground(canvas);
-        drawText(canvas);
+        canvas.drawColor(background);
 
-        drawButton(canvas, noButton, noString);
-        drawButton(canvas, yesButton, yesString);
+        for (Enemy enemy : objects)
+            enemy.draw(canvas);
 
-        flashButton(canvas, noButton, noTimer);
-        flashButton(canvas, yesButton, yesTimer);
-
-        if (showExitAnim) exitAnim.draw(canvas);
-    }
-
-    private void drawText(Canvas canvas) {
+        /**
+         * Drawing title
+         */
         game.paint.setTypeface(game.tf);
         game.paint.setTextSize(60);
         game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText(gameOverString, game.width / 2, bounds.top, game.paint);
+        canvas.drawText(sGameOver, game.width / 2, boundsGame.centerY(), game.paint);
 
+        /**
+         * Drawing final score
+         */
         game.paint.setTextSize(40);
-        canvas.drawText(continueString, game.width / 2, bounds.top + 100, game.paint);
+        canvas.drawText(sFinal, game.width / 2, boundsFinal.top + smallTextHeight, game.paint);
 
-        game.paint.setTextSize(30);
-        canvas.drawText(continueSubString, game.width / 2, bounds.bottom - 150, game.paint);
+        game.paint.setTextSize(80);
+        canvas.drawText("" + visibleTotal, game.width / 2, boundsFinal.centerY() + largeTextHeight / 2, game.paint);
 
-        game.paint.setTextSize(30);
-        canvas.drawText(continueSub2String, game.width / 2, bounds.bottom - 130, game.paint);
+        /**
+         * Drawing wave
+         */
+        game.paint.setColor(Color.argb(alphaWave, 255, 255, 255));
+        game.paint.setTextSize(40);
+        canvas.drawText(sWave, game.width / 2, boundsWave.top + smallTextHeight, game.paint);
 
-        game.paint.setTextSize(120);
-        canvas.drawText(timerString, bounds.centerX(), bounds.centerY(), game.paint);
+        game.paint.setTextSize(80);
+        canvas.drawText("" + wave, game.width / 2, boundsWave.centerY() + largeTextHeight / 2, game.paint);
 
-        game.resetPaint();
+        /**
+         * Drawing enemies
+         */
+        game.paint.setColor(Color.argb(alphaEnemies, 255, 255, 255));
+        game.paint.setTextSize(40);
+        canvas.drawText(sEnemies, game.width / 2, boundsEnemy.top + smallTextHeight, game.paint);
+
+        game.paint.setTextSize(80);
+        canvas.drawText("" + visibleEnemies, game.width / 2, boundsEnemy.centerY() + largeTextHeight / 2, game.paint);
+
+        /**
+         * Drawing game score
+         */
+        game.paint.setColor(Color.argb(alphaScore, 255, 255, 255));
+        game.paint.setTextSize(40);
+        canvas.drawText(sScore, game.width / 2, boundsScore.top + smallTextHeight, game.paint);
+
+        game.paint.setTextSize(80);
+        canvas.drawText("" + visibleScore, game.width / 2, boundsScore.centerY() + largeTextHeight / 2, game.paint);
+
+        if (showAnim) anim.draw(canvas);
     }
 
-    private void drawButton(Canvas canvas, Rect button, String text) {
-        game.paint.setStyle(Paint.Style.STROKE);
-        game.paint.setColor(Color.argb(alpha, 255, 255, 255));
-        game.paint.setStrokeWidth(2);
-        canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
-
-        game.resetPaint();
-
-        game.paint.setTypeface(game.tf);
-        game.paint.setTextSize(35);
-        game.paint.setColor(Color.argb(alpha, 255, 255, 255));
-        game.paint.setTextAlign(Paint.Align.CENTER);
-        int centerY = ((button.bottom - button.top) / 2) + button.top;
-        int centerX = ((button.right - button.left) / 2) + button.left;
-        Rect bounds = new Rect();
-        game.paint.getTextBounds(text, 0, text.length(), bounds);
-        canvas.drawText(text, centerX, centerY - bounds.exactCenterY(), game.paint);
-
-        game.resetPaint();
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
-        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Color.argb(255, 255, 0, 0) : Color.argb(210, 255, 0, 0);
-        timer.cancel();
-        timeIsRunning = false;
-        timerString = "10";
-        game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, true);
-        initialUpdate = true;
+    private void initObjects() {
+        objects = new ArrayList();
+        Random random = new Random();
+        for (int i = 0; i < 9; i++) {
+            if (i % 2 == 0) {
+                objects.add(new Enemy(game, this, Enemy.TYPE_NORMAL, 2, -20, random.nextInt(game.height), 1));
+            } else {
+                objects.add(new Enemy(game, this, Enemy.TYPE_NORMAL, 2, game.width + 20, random.nextInt(game.height), 1));
+            }
+        }
     }
 }

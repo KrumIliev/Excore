@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.PlayState;
 import com.kdi.excore.states.State;
-import com.kdi.excore.utils.ColorUtils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 
 import java.util.Random;
@@ -59,8 +58,6 @@ public class Enemy extends Entity {
         setBaseStats();
         setRank();
         if (multiplier != 1) applyMultiplier();
-
-        if (rank == 4) color = ColorUtils.getRandomColor(false);
 
         double angle = Math.random() * 140 + 20;
         rad = Math.toRadians(angle);
@@ -204,7 +201,8 @@ public class Enemy extends Entity {
         }
 
         if (type == TYPE_BOSS) {
-            color = ColorUtils.getRandomFullColor(!low);
+            Random rnd = new Random();
+            color = low ? Color.rgb(rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255)) : Color.argb(colorAlpha, rnd.nextInt(255), rnd.nextInt(255), rnd.nextInt(255));
             speed = 2;
             Random random = new Random();
             r = random.nextInt(30 - 15) + 15;

@@ -7,6 +7,7 @@ import android.graphics.Rect;
 
 import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.game.Game;
+import com.kdi.excore.states.State;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.states.menu.MainMenuState;
 import com.kdi.excore.utils.ColorUtils;
@@ -28,6 +29,7 @@ public abstract class Substate {
     protected boolean expand;
 
     protected StateManager stateManager;
+    protected State nextState;
 
     protected ColorAnimation exitAnim;
     protected boolean showExitAnim;
@@ -53,6 +55,8 @@ public abstract class Substate {
         exitAnim = new ColorAnimation(game, ColorUtils.getRandomColor(false));
 
         alpha = 0;
+
+        nextState = new MainMenuState(stateManager, game, exitAnim.color);
     }
 
     public abstract void handleInput(float x, float y);
@@ -81,7 +85,7 @@ public abstract class Substate {
             boolean remove = exitAnim.update();
             if (remove) {
                 showExitAnim = false;
-                stateManager.setState(new MainMenuState(stateManager, game, exitAnim.color));
+                stateManager.setState(nextState);
             }
         }
 

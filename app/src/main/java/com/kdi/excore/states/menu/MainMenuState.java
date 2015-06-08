@@ -116,10 +116,10 @@ public class MainMenuState extends Menu {
     }
 
     private void initButtons() {
-        strPlay = "- P l a y -";
-        strRank = "- R a n k -";
-        strOptions = "- O p t i o n s -";
-        strAbout = "- A b o u t -";
+        strPlay = "- P L A Y -";
+        strRank = "- R A N K -";
+        strOptions = "- O P T I O N S -";
+        strAbout = "- C R E D I T S -";
 
         int buttonWidth = game.width / 2 + 100;
         int buttonHeight = 100;

@@ -23,7 +23,7 @@ public class OptionsState extends Menu {
     private String musicON, musicOFF;
     private String soundON, soundOFF;
     private String subsON, subsOFF, subsWTF;
-    private String transON, transOFF, transSub;
+    private String transON, transOFF;
     private String back;
 
     private boolean musicState;
@@ -153,9 +153,9 @@ public class OptionsState extends Menu {
             drawButton(canvas, subsButton, subsOFF, subsWTF, 30);
 
         if (transState)
-            drawButton(canvas, transButton, transON, transSub, 30);
+            drawButton(canvas, transButton, transON, null, 30);
         else
-            drawButton(canvas, transButton, transOFF, transSub, 30);
+            drawButton(canvas, transButton, transOFF, null, 30);
 
         drawButton(canvas, backButton, back, null, 30);
 
@@ -179,7 +179,6 @@ public class OptionsState extends Menu {
         back = "- B A C K -";
         transON = "- D E T A I L S     L O W -";
         transOFF = "- D E T A I L S     H I G H -";
-        transSub = "N o   t r a n s p a r e n c y   o n   l o w";
 
         int buttonWidth = game.width / 2 + 100;
         int buttonHeight = 100;
