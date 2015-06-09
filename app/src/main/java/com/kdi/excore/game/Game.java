@@ -21,11 +21,19 @@ import com.kdi.excore.xfx.AudioPlayer;
 /**
  * Created by Krum Iliev on 5/22/2015.
  */
-public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnable, Thread.UncaughtExceptionHandler {
+
+    public static final String LOG_TAG = Game.class.getSimpleName();
 
     public int width, height;
-    public int devWidth, devHeight;
+    public float devWidth, devHeight;
+
+    //Used to ensure appropriate threading
+    static final Integer monitor = 1;
+    //Game thread
     private Thread gameThread;
+    //The surface this thread (and only this thread) writes upon
+    private SurfaceHolder mSurfaceHolder;
 
     private int FPS = 60;
     public boolean running, paused;
@@ -51,15 +59,27 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         getHolder().addCallback(this);
         setFocusable(true);
 
-        width = 480;
-        height = 800;
-
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         devWidth = size.x;
         devHeight = size.y;
+
+        Log.d(LOG_TAG, "Screen w: " + devWidth + " Screen h: " + devHeight);
+
+        height = 800;
+
+        if (devHeight > 900) {
+            width = (int) (devWidth / (devHeight / height));
+        } else if (devHeight > 800 && devHeight < 900) {
+            width = (int) devWidth;
+            height = (int) devHeight;
+        } else {
+            width = 480;
+        }
+
+        Log.d(LOG_TAG, "Canvas w: " + width + " Canvas h: " + height);
 
         preferences = new ExcoreSharedPreferences(getContext());
         background = Utils.getRandomColor(false);
@@ -77,13 +97,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         holder.setFixedSize(width, height);
-        Log.d("Game", "Width: " + width + " Height: " + height);
+        mSurfaceHolder = holder;
 
         stateManager.push(new MainMenuState(stateManager, this, Utils.getRandomColor(false)));
         preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
 
         running = true;
         gameThread = new Thread(this);
+        gameThread.setUncaughtExceptionHandler(this);
         gameThread.start();
         gameThread.setPriority(Thread.MAX_PRIORITY);
     }
@@ -148,25 +169,23 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         long startTime;
         long URDTimeMillis;
         long waitTime;
-
         long targetTime = 1000 / FPS;
 
+        Canvas runCanvas;
         while (running) {
-            Canvas c = null;
+            runCanvas = null;
             startTime = System.nanoTime();
-            SurfaceHolder holder = getHolder();
-            holder.setFixedSize(width, height);
 
             if (!paused) {
                 try {
-                    update();
-                    c = holder.lockCanvas();
-                    synchronized (holder) {
-                        draw(c);
+                    runCanvas = mSurfaceHolder.lockCanvas(null);
+                    synchronized (monitor) {
+                        update();
+                        draw(runCanvas);
                     }
                 } finally {
-                    if (c != null) {
-                        holder.unlockCanvasAndPost(c);
+                    if (runCanvas != null) {
+                        if (mSurfaceHolder != null) mSurfaceHolder.unlockCanvasAndPost(runCanvas);
                     }
                 }
             }
@@ -177,7 +196,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
             try {
                 Thread.sleep(waitTime);
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable ex) {
+        Log.e(LOG_TAG, ex.toString());
     }
 }

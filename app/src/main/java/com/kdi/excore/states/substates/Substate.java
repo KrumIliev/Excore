@@ -43,7 +43,7 @@ public abstract class Substate {
         x = game.width / 2;
         y = game.height / 2;
 
-        maxR = game.getWidth() / 2 > game.getHeight() / 2 ? game.getWidth() / 2 : game.getHeight() / 2;
+        maxR = game.width / 2 > game.height / 2 ? game.width / 2 : game.height / 2;
         maxR = maxR + 110;
 
         color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Utils.getRandomColor(false) : Utils.getRandomColor(true);

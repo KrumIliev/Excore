@@ -81,7 +81,7 @@ public class PlayState extends State {
     private long pauseDiff;
 
     private PauseState pauseState;
-    private ContinueState gameOver;
+    private ContinueState continueState;
 
     private int maxTypeOneWave;
     private int maxTypeTwoWave;
@@ -126,7 +126,7 @@ public class PlayState extends State {
         int bottom = top + pauseHeight;
         pauseButton = new Rect(left, top, right, bottom);
         pauseState = new PauseState(game, stateManager);
-        gameOver = new ContinueState(game, stateManager, this);
+        continueState = new ContinueState(game, stateManager, this);
 
         slowTopY = 0;
         fastTopY = 0;
@@ -140,7 +140,7 @@ public class PlayState extends State {
 
         scoreMultiplier = 1;
 
-        exitAnim = new ColorAnimation(game, Color.RED);
+        exitAnim = new ColorAnimation(game, Color.rgb(150, 0, 0));
     }
 
     @Override
@@ -188,10 +188,10 @@ public class PlayState extends State {
         }
 
         if (player.dead) {
-            if (gameOver.numCont == 0 || mode == MODE_HARDCORE) {
+            if (continueState.numCont == 0 || mode == MODE_HARDCORE) {
                 showExitAnim = true;
-            } else if (gameOver.update()) {
-                gameOver.reset();
+            } else if (continueState.update()) {
+                continueState.reset();
                 player.continueGame();
                 if (mode == MODE_TIME_ATTACK) {
                     countdownDiff = 0;
@@ -544,7 +544,7 @@ public class PlayState extends State {
             subtitle.draw(canvas);
 
         if (pause) pauseState.draw(canvas);
-        if (player.dead) gameOver.draw(canvas);
+        if (player.dead) continueState.draw(canvas);
         if (showExitAnim) exitAnim.draw(canvas);
     }
 
@@ -661,7 +661,7 @@ public class PlayState extends State {
         if (pause) {
             pauseState.handleInput(x, y);
         } else if (player.dead) {
-            gameOver.handleInput(x, y);
+            continueState.handleInput(x, y);
         } else if (pauseButton.contains((int) x, (int) y)) {
             game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);

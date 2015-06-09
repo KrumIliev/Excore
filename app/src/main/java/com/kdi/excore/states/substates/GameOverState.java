@@ -70,7 +70,7 @@ public class GameOverState extends State {
         this.score = score;
         this.wave = wave;
         this.enemies = enemies;
-        background = Color.RED;
+        background = Color.rgb(150, 0, 0);
         game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
         init();
 

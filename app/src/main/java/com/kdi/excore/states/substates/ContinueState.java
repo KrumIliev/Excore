@@ -65,7 +65,7 @@ public class ContinueState extends Substate {
         continueSub2String = "h a l f   o f   y o u r   s c o r e   s o   f a r";
 
         timerString = "10";
-        exitAnim = new ColorAnimation(game, Color.RED);
+        exitAnim = new ColorAnimation(game, Color.rgb(150, 0, 0));
 
         int boundsWidth = game.width / 2 + 100;
         int boundsHeight = game.height / 2 + 100;
