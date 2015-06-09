@@ -122,7 +122,7 @@ public class MainMenuState extends Menu {
         strAbout = "- C R E D I T S -";
 
         int buttonWidth = game.width / 2 + 100;
-        int buttonHeight = 100;
+        int buttonHeight = game.height > 1000 ? 150 : 100;
         int buttonVerticalSpace = (game.height - buttonHeight * 4) / 5;
 
         int left = (game.width - buttonWidth) / 2;

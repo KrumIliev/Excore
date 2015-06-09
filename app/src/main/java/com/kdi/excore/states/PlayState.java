@@ -118,8 +118,8 @@ public class PlayState extends State {
         subtitles = new ArrayList<>();
         nextWave = new ColorAnimation(game, ColorUtils.getRandomColor(false));
 
-        int pauseWidth = 120;
-        int pauseHeight = 40;
+        int pauseWidth = game.height > 1000 ? 240 : 120;
+        int pauseHeight = game.height > 1000 ? 80 : 40;
         int left = game.width / 2 - pauseWidth / 2;
         int right = left + pauseWidth;
         int top = 20;
@@ -645,8 +645,9 @@ public class PlayState extends State {
             game.resetPaint();
         }
 
+        int textSize = game.height > 1000 ? 40 : 25;
         game.paint.setTypeface(game.tf);
-        game.paint.setTextSize(25);
+        game.paint.setTextSize(textSize);
         game.paint.setColor(Color.WHITE);
         game.paint.setTextAlign(Paint.Align.CENTER);
         int centerY = ((pauseButton.bottom - pauseButton.top) / 2) + pauseButton.top;

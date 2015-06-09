@@ -72,8 +72,9 @@ public abstract class Menu extends State {
         canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
         game.resetPaint();
 
+        int textSize = game.height > 1000 ? 45 : 30;
         game.paint.setTypeface(game.tf);
-        game.paint.setTextSize(30);
+        game.paint.setTextSize(textSize);
         game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setTextAlign(Paint.Align.CENTER);
         int centerY = ((button.bottom - button.top) / 2) + button.top;

@@ -12,4 +12,7 @@
     <string name="menu_stop">Stop</string>
     <string name="menu_resume">Resume</string>
     <string name="message_stopped">Stopped</string>
+
+    <string name="google_failure">Unable to sign in.</string>
+    <string name="google_error">"Google login failed. Attempting to resolve.</string>
 </resources>
