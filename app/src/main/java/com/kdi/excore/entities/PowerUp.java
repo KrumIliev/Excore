@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.kdi.excore.game.Game;
+import com.kdi.excore.states.PlayState;
 
 /**
  * Created by Krum Iliev on 5/23/2015.
@@ -85,5 +86,29 @@ public class PowerUp extends Entity {
         canvas.drawRect((float) (x - r / 2), (float) (y - r / 2), (float) (x + r / 2), (float) (y + r / 2), game.paint);
 
         game.resetPaint();
+    }
+
+    public static PowerUp getPowerUp(Enemy enemy, int mode, Game game) {
+        PowerUp powerUp = null;
+        double rand = Math.random();
+        if (rand < 0.001) {
+            if (mode != PlayState.MODE_HARDCORE)
+                powerUp = new PowerUp(game, PowerUp.TYPE_LIFE, enemy.x, enemy.y);
+        } else if (rand < 0.020)
+            powerUp = new PowerUp(game, PowerUp.TYPE_DESTROY, enemy.x, enemy.y);
+        else if (rand < 0.050)
+            powerUp = new PowerUp(game, PowerUp.TYPE_POWER, enemy.x, enemy.y);
+        else if (rand < 0.070)
+            powerUp = new PowerUp(game, PowerUp.TYPE_DOUBLE_SCORE, enemy.x, enemy.y);
+        else if (rand < 0.100)
+            powerUp = new PowerUp(game, PowerUp.TYPE_IMMORTALITY, enemy.x, enemy.y);
+        else if (rand < 0.120)
+            powerUp = new PowerUp(game, PowerUp.TYPE_FASTER_ENEMY, enemy.x, enemy.y);
+        else if (rand < 0.130)
+            powerUp = new PowerUp(game, PowerUp.TYPE_SLOW, enemy.x, enemy.y);
+        else if (rand < 0.140)
+            powerUp = new PowerUp(game, PowerUp.TYPE_FLY, enemy.x, enemy.y);
+
+        return powerUp;
     }
 }

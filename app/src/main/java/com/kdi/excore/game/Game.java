@@ -47,6 +47,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         getHolder().addCallback(this);
         setFocusable(true);
 
+        width = 480;
+        height = 800;
+
         preferences = new ExcoreSharedPreferences(getContext());
         background = ColorUtils.getRandomColor(false);
 
@@ -62,8 +65,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        width = getWidth();
-        height = getHeight();
+        holder.setFixedSize(width, height);
         Log.d("Game", "Width: " + width + " Height: " + height);
 
         stateManager.push(new MainMenuState(stateManager, this, ColorUtils.getRandomColor(false)));
@@ -100,6 +102,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.d("Game", "Coordinate X: " + event.getX() + " Coordinate Y: " + event.getY());
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 stateManager.handleInput(event.getX(), event.getY());
@@ -140,6 +143,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
             Canvas c = null;
             startTime = System.nanoTime();
             SurfaceHolder holder = getHolder();
+            holder.setFixedSize(width, height);
 
             if (!paused) {
                 try {

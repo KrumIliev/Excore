@@ -200,7 +200,6 @@ public class PlayState extends State {
             }
         }
 
-
         if (showExitAnim) {
             boolean remove = exitAnim.update();
             if (remove) {
@@ -615,6 +614,7 @@ public class PlayState extends State {
         }
 
         canvas.drawText(countdownTimerString, game.width / 2, 120, game.paint);
+        game.resetPaint();
     }
 
     private void drawPower(Canvas canvas) {
@@ -673,24 +673,8 @@ public class PlayState extends State {
     }
 
     public void addPowerUp(Enemy enemy) {
-        double rand = Math.random();
-        if (rand < 0.001) {
-            if (mode != MODE_HARDCORE)
-                powerUps.add(new PowerUp(game, PowerUp.TYPE_LIFE, enemy.x, enemy.y));
-        } else if (rand < 0.020)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_DESTROY, enemy.x, enemy.y));
-        else if (rand < 0.050)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_POWER, enemy.x, enemy.y));
-        else if (rand < 0.070)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_DOUBLE_SCORE, enemy.x, enemy.y));
-        else if (rand < 0.100)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_IMMORTALITY, enemy.x, enemy.y));
-        else if (rand < 0.120)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_FASTER_ENEMY, enemy.x, enemy.y));
-        else if (rand < 0.130)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_SLOW, enemy.x, enemy.y));
-        else if (rand < 0.140)
-            powerUps.add(new PowerUp(game, PowerUp.TYPE_FLY, enemy.x, enemy.y));
+        PowerUp powerUp = PowerUp.getPowerUp(enemy, mode, game);
+        if (powerUp != null) powerUps.add(powerUp);
     }
 
     public void addBullet(float angle, double x, double y) {

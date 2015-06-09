@@ -20,9 +20,9 @@ public class ColorAnimation {
 
     public ColorAnimation(Game game, int color) {
         this.game = game;
-        x = game.getWidth() / 2;
-        y = game.getHeight() / 2;
-        maxR = game.getWidth() / 2 > game.getHeight() / 2 ? game.getWidth() / 2 : game.getHeight() / 2;
+        x = game.width / 2;
+        y = game.height / 2;
+        maxR = game.width / 2 > game.height / 2 ? game.width / 2 : game.height / 2;
         maxR = maxR + 110;
         reset(color);
     }

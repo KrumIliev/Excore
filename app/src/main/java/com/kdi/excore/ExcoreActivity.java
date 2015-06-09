@@ -69,7 +69,7 @@ public class ExcoreActivity extends Activity implements GameListener, GoogleApiC
     @Override
     protected void onStop() {
         super.onStop();
-      //  mGoogleApiClient.disconnect();
+        //mGoogleApiClient.disconnect();
     }
 
     @Override

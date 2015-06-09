@@ -55,8 +55,8 @@ public class Player {
         this.gameView = gameView;
         this.playState = (PlayState) state;
 
-        x = gameView.getWidth() / 2;
-        y = gameView.getHeight() - 50;
+        x = gameView.width / 2;
+        y = gameView.height - 50;
         r = 20;
 
         dx = 0;
@@ -132,12 +132,12 @@ public class Player {
             y = r;
             dy = -dy;
         }
-        if (x > gameView.getWidth() - r) {
-            x = gameView.getWidth() - r;
+        if (x > gameView.width - r) {
+            x = gameView.width - r;
             dx = -dx;
         }
-        if (y > gameView.getHeight() - r) {
-            y = gameView.getHeight() - r;
+        if (y > gameView.height - r) {
+            y = gameView.height - r;
             dy = -dy;
         }
     }

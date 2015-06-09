@@ -106,8 +106,8 @@ public class Enemy extends Entity {
 
         if (x < r && dx < 0) dx = -dx;
         if (y < r && dy < 0) dy = -dy;
-        if (x > game.getWidth() - r && dx > 0) dx = -dx;
-        if (y > game.getHeight() - r && dy > 0) dy = -dy;
+        if (x > game.width - r && dx > 0) dx = -dx;
+        if (y > game.height - r && dy > 0) dy = -dy;
 
         if (hit) {
             long elapsed = (System.nanoTime() - hitTimer) / 1000000;
