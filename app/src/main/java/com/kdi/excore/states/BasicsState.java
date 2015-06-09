@@ -11,7 +11,7 @@ import com.kdi.excore.R;
 import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.menu.SelectModeState;
-import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.Utils;
 import com.kdi.excore.xfx.AudioPlayer;
 
 /**
@@ -33,7 +33,7 @@ public class BasicsState extends State {
 
         background = color;
         alpha = 0;
-        anim = new ColorAnimation(game, ColorUtils.getRandomColor(false));
+        anim = new ColorAnimation(game, Utils.getRandomColor(false));
         tapImage = BitmapFactory.decodeResource(game.getResources(), R.drawable.tap);
 
         // Separates the screen to 3 rect objects with the same size

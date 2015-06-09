@@ -3,15 +3,18 @@ package com.kdi.excore.game;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.states.menu.MainMenuState;
-import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.Utils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.xfx.AudioPlayer;
 
@@ -21,6 +24,7 @@ import com.kdi.excore.xfx.AudioPlayer;
 public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
     public int width, height;
+    public int devWidth, devHeight;
     private Thread gameThread;
 
     private int FPS = 60;
@@ -50,8 +54,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         width = 480;
         height = 800;
 
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        devWidth = size.x;
+        devHeight = size.y;
+
         preferences = new ExcoreSharedPreferences(getContext());
-        background = ColorUtils.getRandomColor(false);
+        background = Utils.getRandomColor(false);
 
         tf = Typeface.createFromAsset(getContext().getAssets(), "font.ttf");
         audioPlayer = new AudioPlayer(getContext());
@@ -68,7 +79,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         holder.setFixedSize(width, height);
         Log.d("Game", "Width: " + width + " Height: " + height);
 
-        stateManager.push(new MainMenuState(stateManager, this, ColorUtils.getRandomColor(false)));
+        stateManager.push(new MainMenuState(stateManager, this, Utils.getRandomColor(false)));
         preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
 
         running = true;
@@ -102,14 +113,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d("Game", "Coordinate X: " + event.getX() + " Coordinate Y: " + event.getY());
+        float x = Utils.calculatePointScale(width, devWidth, event.getX());
+        float y = Utils.calculatePointScale(height, devHeight, event.getY());
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                stateManager.handleInput(event.getX(), event.getY());
+                stateManager.handleInput(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (preferences.getSetting(ExcoreSharedPreferences.KEY_MOVE)) {
-                    stateManager.handleInput(event.getX(), event.getY());
+                    stateManager.handleInput(x, y);
                 }
                 break;
         }

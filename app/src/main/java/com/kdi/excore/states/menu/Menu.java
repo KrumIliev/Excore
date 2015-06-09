@@ -10,7 +10,7 @@ import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.State;
 import com.kdi.excore.states.StateManager;
-import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -37,7 +37,7 @@ public abstract class Menu extends State {
         alpha = 0;
         objects = new ArrayList<>();
         initObjects(objects, objectsType);
-        anim = new ColorAnimation(game, ColorUtils.getRandomColor(false));
+        anim = new ColorAnimation(game, Utils.getRandomColor(false));
     }
 
     @Override
@@ -72,9 +72,8 @@ public abstract class Menu extends State {
         canvas.drawRect(button.left, button.top, button.right, button.bottom, game.paint);
         game.resetPaint();
 
-        int textSize = game.height > 1000 ? 45 : 30;
         game.paint.setTypeface(game.tf);
-        game.paint.setTextSize(textSize);
+        game.paint.setTextSize(30);
         game.paint.setColor(Color.argb(alpha, 255, 255, 255));
         game.paint.setTextAlign(Paint.Align.CENTER);
         int centerY = ((button.bottom - button.top) / 2) + button.top;

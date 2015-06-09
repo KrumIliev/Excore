@@ -10,7 +10,7 @@ import com.kdi.excore.game.Game;
 import com.kdi.excore.states.State;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.states.menu.MainMenuState;
-import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.Utils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 
 /**
@@ -40,19 +40,19 @@ public abstract class Substate {
         this.game = game;
         this.stateManager = stateManager;
 
-        x = game.getWidth() / 2;
-        y = game.getHeight() / 2;
+        x = game.width / 2;
+        y = game.height / 2;
 
         maxR = game.getWidth() / 2 > game.getHeight() / 2 ? game.getWidth() / 2 : game.getHeight() / 2;
         maxR = maxR + 110;
 
-        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? ColorUtils.getRandomColor(false) : ColorUtils.getRandomColor(true);
+        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Utils.getRandomColor(false) : Utils.getRandomColor(true);
         r = 1;
 
         close = false;
         expand = true;
 
-        exitAnim = new ColorAnimation(game, ColorUtils.getRandomColor(false));
+        exitAnim = new ColorAnimation(game, Utils.getRandomColor(false));
 
         alpha = 0;
 
@@ -65,14 +65,10 @@ public abstract class Substate {
 
     public boolean update() {
         if (close) {
-            if (game.height > 1000) r -= 8;
-            else r -= 5;
+            r -= 5;
             if (r <= 1) return true;
         } else {
-            if (expand) {
-                if (game.height > 1000) r += 8;
-                else r += 5;
-            }
+            if (expand) r += 5;
             if (r > maxR / 2) {
                 alpha += 3;
                 if (alpha > 255) alpha = 255;
@@ -122,7 +118,7 @@ public abstract class Substate {
         r = 1;
         close = false;
         expand = true;
-        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? ColorUtils.getRandomColor(false) : ColorUtils.getRandomColor(true);
+        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Utils.getRandomColor(false) : Utils.getRandomColor(true);
         alpha = 0;
     }
 }

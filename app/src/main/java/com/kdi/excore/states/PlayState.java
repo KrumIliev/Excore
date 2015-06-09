@@ -17,7 +17,7 @@ import com.kdi.excore.game.Game;
 import com.kdi.excore.states.substates.ContinueState;
 import com.kdi.excore.states.substates.GameOverState;
 import com.kdi.excore.states.substates.PauseState;
-import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.Utils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.xfx.AudioPlayer;
 
@@ -116,10 +116,10 @@ public class PlayState extends State {
         explosions = new ArrayList<>();
         powerUps = new ArrayList<>();
         subtitles = new ArrayList<>();
-        nextWave = new ColorAnimation(game, ColorUtils.getRandomColor(false));
+        nextWave = new ColorAnimation(game, Utils.getRandomColor(false));
 
-        int pauseWidth = game.height > 1000 ? 240 : 120;
-        int pauseHeight = game.height > 1000 ? 80 : 40;
+        int pauseWidth = 120;
+        int pauseHeight = 40;
         int left = game.width / 2 - pauseWidth / 2;
         int right = left + pauseWidth;
         int top = 20;
@@ -246,7 +246,7 @@ public class PlayState extends State {
             if (remove) {
                 showNextWaveAnimation = false;
                 background = nextWave.color;
-                nextWave.reset(ColorUtils.getRandomColor(false));
+                nextWave.reset(Utils.getRandomColor(false));
             }
         }
     }
@@ -645,9 +645,8 @@ public class PlayState extends State {
             game.resetPaint();
         }
 
-        int textSize = game.height > 1000 ? 40 : 25;
         game.paint.setTypeface(game.tf);
-        game.paint.setTextSize(textSize);
+        game.paint.setTextSize(25);
         game.paint.setColor(Color.WHITE);
         game.paint.setTextAlign(Paint.Align.CENTER);
         int centerY = ((pauseButton.bottom - pauseButton.top) / 2) + pauseButton.top;

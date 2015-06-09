@@ -9,7 +9,7 @@ import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.PlayState;
 import com.kdi.excore.states.StateManager;
-import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.Utils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.xfx.AudioPlayer;
 
@@ -48,7 +48,7 @@ public class ContinueState extends Substate {
 
     public ContinueState(Game game, StateManager stateManager, PlayState playState) {
         super(game, stateManager);
-        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? ColorUtils.getRandomColor(false) : ColorUtils.getRandomColor(true);
+        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Utils.getRandomColor(false) : Utils.getRandomColor(true);
         timeIsRunning = false;
         this.platState = playState;
         init();
@@ -218,7 +218,7 @@ public class ContinueState extends Substate {
     @Override
     public void reset() {
         super.reset();
-        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? ColorUtils.getRandomColor(false) : ColorUtils.getRandomColor(true);
+        color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Utils.getRandomColor(false) : Utils.getRandomColor(true);
         continueTimer = 0;
         timeIsRunning = false;
         timerString = "10";

@@ -181,7 +181,7 @@ public class OptionsState extends Menu {
         transOFF = "- D E T A I L S     H I G H -";
 
         int buttonWidth = game.width / 2 + 100;
-        int buttonHeight = game.height > 1000 ? 150 : 100;
+        int buttonHeight = 100;
         int buttonVerticalSpace = (game.height - (buttonHeight * 5)) / 6;
 
         int left = (game.width - buttonWidth) / 2;

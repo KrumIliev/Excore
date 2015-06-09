@@ -12,7 +12,7 @@ import com.kdi.excore.game.Game;
 import com.kdi.excore.states.State;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.states.menu.MainMenuState;
-import com.kdi.excore.utils.ColorUtils;
+import com.kdi.excore.utils.Utils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class GameOverState extends State {
         alphaScore = 0;
         alphaEnemies = 0;
 
-        anim = new ColorAnimation(game, ColorUtils.getRandomColor(false));
+        anim = new ColorAnimation(game, Utils.getRandomColor(false));
 
         game.paint.setTypeface(game.tf);
         game.paint.setTextSize(80);

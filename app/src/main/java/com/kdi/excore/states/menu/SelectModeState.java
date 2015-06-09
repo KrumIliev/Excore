@@ -151,7 +151,7 @@ public class SelectModeState extends Menu {
         subBasics = "H o w   t o   p l a y   a n d   s t u f f   . . .";
 
         int buttonWidth = game.width / 2 + 100;
-        int buttonHeight = game.height > 1000 ? 150 : 100;
+        int buttonHeight = 100;
         int buttonVerticalSpace = (game.height - buttonHeight * 5) / 6;
 
         int left = (game.width - buttonWidth) / 2;
