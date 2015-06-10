@@ -4,16 +4,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.Log;
 
+import com.kdi.excore.R;
 import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.entities.Enemy;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.State;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.states.menu.MainMenuState;
-import com.kdi.excore.utils.Utils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
+import com.kdi.excore.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -32,6 +32,8 @@ public class GameOverState extends State {
 
     private int total = 0;
     private int visibleTotal = 0;
+
+    private int mode;
 
     private Rect boundsGame;
     private Rect boundsWave;
@@ -65,16 +67,16 @@ public class GameOverState extends State {
 
     private int scoreMultiplier;
 
-    public GameOverState(StateManager stateManager, Game game, int score, int wave, int enemies) {
+    public GameOverState(StateManager stateManager, Game game, int score, int wave, int enemies, int mode) {
         super(stateManager, game);
         this.score = score;
         this.wave = wave;
         this.enemies = enemies;
+        this.mode = mode;
         background = Color.rgb(150, 0, 0);
         game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
         init();
-
-        Log.d("Game final", "Score: " + score + " Wave: " + wave + " Enemies: " + enemies);
+        submitScore();
     }
 
     private void init() {
@@ -111,6 +113,26 @@ public class GameOverState extends State {
         if (scoreMultiplier == 0) scoreMultiplier = 1;
 
         initObjects();
+    }
+
+    private void submitScore() {
+        int finalScore = score + wave * enemies;
+        if (finalScore > 50000) game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_score_frenzy));
+        if (wave > 1) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_wave_master), wave - 1);
+        if (enemies == 0) game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_professional_n00b));
+        if (enemies > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_core_exterminator), enemies);
+
+        switch (mode) {
+            case 0:
+                game.litener.addToLeaderboard(game.getContext().getString(R.string.normal_leaderboard), finalScore);
+                break;
+            case 1:
+                game.litener.addToLeaderboard(game.getContext().getString(R.string.hardcore_leaderboard), finalScore);
+                break;
+            case 2:
+                game.litener.addToLeaderboard(game.getContext().getString(R.string.time_leaderboard), finalScore);
+                break;
+        }
     }
 
     @Override

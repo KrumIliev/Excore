@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import com.kdi.excore.R;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.PlayState;
 import com.kdi.excore.states.State;
@@ -43,7 +44,7 @@ public class Player {
     public int power;
     public int[] requiredPower = {1, 2, 3, 3, 2, 0};
 
-    private Game gameView;
+    private Game game;
     private PlayState playState;
 
     private long dischargeTimer;
@@ -52,7 +53,7 @@ public class Player {
     public int enemiesKilled = 0;
 
     public Player(Game gameView, State state) {
-        this.gameView = gameView;
+        this.game = gameView;
         this.playState = (PlayState) state;
 
         x = gameView.width / 2;
@@ -132,12 +133,12 @@ public class Player {
             y = r;
             dy = -dy;
         }
-        if (x > gameView.width - r) {
-            x = gameView.width - r;
+        if (x > game.width - r) {
+            x = game.width - r;
             dx = -dx;
         }
-        if (y > gameView.height - r) {
-            y = gameView.height - r;
+        if (y > game.height - r) {
+            y = game.height - r;
             dy = -dy;
         }
     }
@@ -149,31 +150,31 @@ public class Player {
             firingTimer = System.nanoTime();
 
             if (powerLevel == 0) {
-                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_0);
+                game.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_0);
                 playState.addBullet(270, x, y - 10);
             }
 
             if (powerLevel == 1) {
-                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_1);
+                game.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_1);
                 playState.addBullet(270, x + 10, y - 10);
                 playState.addBullet(270, x - 10, y - 10);
             }
 
             if (powerLevel == 2) {
-                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_2);
+                game.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_2);
                 playState.addBullet(275, x + 10, y - 10);
                 playState.addBullet(265, x - 10, y - 10);
             }
 
             if (powerLevel == 3) {
-                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_3);
+                game.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_3);
                 playState.addBullet(270, x, y - 10);
                 playState.addBullet(270, x + 10, y - 10);
                 playState.addBullet(270, x - 10, y - 10);
             }
 
             if (powerLevel == 4) {
-                gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_4);
+                game.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_4);
                 playState.addBullet(270, x, y - 10);
                 playState.addBullet(275, x + 5, y - 10);
                 playState.addBullet(265, x - 5, y - 10);
@@ -181,7 +182,8 @@ public class Player {
 
             if (powerLevel == 5) {
                 if (dischargeTimer != 0) {
-                    gameView.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_DISCHARGE);
+                    game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_overcharge));
+                    game.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_DISCHARGE);
                     playState.addBullet(270, x, y - 10);
                     playState.addBullet(275, x + 5, y - 10);
                     playState.addBullet(280, x + 5, y - 10);
@@ -196,22 +198,22 @@ public class Player {
 
     public void draw(Canvas canvas) {
 
-        gameView.paint.setStyle(Paint.Style.FILL);
+        game.paint.setStyle(Paint.Style.FILL);
         if (recovering) {
-            gameView.paint.setColor(Color.RED);
+            game.paint.setColor(Color.RED);
         } else if (immortal) {
-            gameView.paint.setColor(Color.YELLOW);
+            game.paint.setColor(Color.YELLOW);
         } else {
-            gameView.paint.setColor(Color.GRAY);
+            game.paint.setColor(Color.GRAY);
         }
-        canvas.drawCircle(x, y, r, gameView.paint);
+        canvas.drawCircle(x, y, r, game.paint);
 
-        gameView.paint.setStyle(Paint.Style.STROKE);
-        gameView.paint.setColor(Color.WHITE);
-        gameView.paint.setStrokeWidth(4);
-        canvas.drawCircle(x, y, r, gameView.paint);
+        game.paint.setStyle(Paint.Style.STROKE);
+        game.paint.setColor(Color.WHITE);
+        game.paint.setStrokeWidth(4);
+        canvas.drawCircle(x, y, r, game.paint);
 
-        gameView.resetPaint();
+        game.resetPaint();
     }
 
     public void setDestination(float newX, float newY) {

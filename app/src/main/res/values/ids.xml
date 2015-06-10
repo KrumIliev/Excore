@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_id">817801850390</string>
+    <string name="normal_leaderboard">CgkIltynxuYXEAIQAQ</string>
+    <string name="hardcore_leaderboard">CgkIltynxuYXEAIQAg</string>
+    <string name="time_leaderboard">CgkIltynxuYXEAIQAw</string>
+
+    <string name="achievement_normal_newbie">CgkIltynxuYXEAIQBg</string>
+    <string name="achievement_normal_pro">CgkIltynxuYXEAIQBw</string>
+    <string name="achievement_normal_god">CgkIltynxuYXEAIQCA</string>
+    <string name="achievement_hardcore_newbie">CgkIltynxuYXEAIQCQ</string>
+    <string name="achievement_hardcore_pro">CgkIltynxuYXEAIQCg</string>
+    <string name="achievement_hardcore_god">CgkIltynxuYXEAIQCw</string>
+    <string name="achievement_time_attack_newbie">CgkIltynxuYXEAIQDA</string>
+    <string name="achievement_time_attack_pro">CgkIltynxuYXEAIQDQ</string>
+    <string name="achievement_time_attack_god">CgkIltynxuYXEAIQDg</string>
+    <string name="achievement_professional_n00b">CgkIltynxuYXEAIQDw</string>
+    <string name="achievement_the_flash">CgkIltynxuYXEAIQEA</string>
+    <string name="achievement_core_exterminator">CgkIltynxuYXEAIQEQ</string>
+    <string name="achievement_core_destroyer">CgkIltynxuYXEAIQEg</string>
+    <string name="achievement_score_frenzy">CgkIltynxuYXEAIQEw</string>
+    <string name="achievement_lucky">CgkIltynxuYXEAIQFA</string>
+    <string name="achievement_overcharge">CgkIltynxuYXEAIQFQ</string>
+    <string name="achievement_updates_are_for_the_weak">CgkIltynxuYXEAIQFg</string>
+    <string name="achievement_green_huter">CgkIltynxuYXEAIQFw</string>
+    <string name="achievement_blue_hunter">CgkIltynxuYXEAIQGA</string>
+    <string name="achievement_pink_hunter">CgkIltynxuYXEAIQGQ</string>
+    <string name="achievement_yellow_hunter">CgkIltynxuYXEAIQGg</string>
+    <string name="achievement_wave_master">CgkIltynxuYXEAIQGw</string>
+</resources>

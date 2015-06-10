@@ -5,4 +5,14 @@ package com.kdi.excore.game;
  */
 public interface GameListener {
     void onExit();
+
+    void addToLeaderboard(String leaderboardID, int score);
+
+    void openLeaderboard(String leaderboardID);
+
+    void unlockAchievement(String achievementID);
+
+    void incrementAchievement(String achievementID, int value);
+
+    void openAchievements();
 }

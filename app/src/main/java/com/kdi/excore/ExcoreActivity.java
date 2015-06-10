@@ -1,48 +1,94 @@
 package com.kdi.excore;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.example.games.basegameutils.BaseGameUtils;
+import com.google.example.games.basegameutils.BaseGameActivity;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.game.GameListener;
 
-public class ExcoreActivity extends Activity implements GameListener, GoogleApiClient.ConnectionCallbacks,
+public class ExcoreActivity extends BaseGameActivity implements GameListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     private Game game;
     private GoogleApiClient mGoogleApiClient;
 
-    private static int RC_SIGN_IN = 9001;
-    private boolean mResolvingConnectionFailure = false;
-    private boolean mAutoStartSignInflow = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setRequestedClients(CLIENT_GAMES | CLIENT_PLUS);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
-                .build();
-
-
         game = new Game(this, this);
         setContentView(game);
+        beginUserInitiatedSignIn();
+    }
+
+    @Override
+    public void onSignInFailed() {
+        Log.d("Game", "onSignInFailed()");
+    }
+
+    @Override
+    public void onSignInSucceeded() {
+        mGoogleApiClient = getApiClient();
+        Log.d("Game", "onSignInSucceeded()");
+    }
+
+    @Override
+    public void addToLeaderboard(String leaderboardID, int score) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            Games.Leaderboards.submitScore(mGoogleApiClient, leaderboardID, score);
+        } else {
+            Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void openLeaderboard(String leaderboardID) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient, leaderboardID), 1919);
+        } else {
+            Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void unlockAchievement(String achievementID) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            Games.Achievements.unlock(mGoogleApiClient, achievementID);
+        } else {
+            Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void incrementAchievement(String achievementID, int value) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            Games.Achievements.increment(mGoogleApiClient, achievementID, value);
+            Log.d("Game", "Incrementing: " + achievementID + " With: " + value);
+        } else {
+            Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void openAchievements() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), 2121);
+        } else {
+            Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -63,54 +109,17 @@ public class ExcoreActivity extends Activity implements GameListener, GoogleApiC
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        //mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        //mGoogleApiClient.disconnect();
-    }
-
-    @Override
     public void onConnected(Bundle bundle) {
         Log.d("Game", "Google Connected");
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d("Game", "Google Failed");
-        if (mResolvingConnectionFailure) return;
-
-        if (mAutoStartSignInflow) {
-            mAutoStartSignInflow = false;
-            mResolvingConnectionFailure = true;
-
-            if (!BaseGameUtils.resolveConnectionFailure(this, mGoogleApiClient, connectionResult,
-                    RC_SIGN_IN, getString(R.string.google_error))) {
-                mResolvingConnectionFailure = false;
-            }
-        }
+        Log.d("Game", "Google Failed" + connectionResult.toString());
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_SIGN_IN) {
-            mResolvingConnectionFailure = false;
-            if (resultCode == RESULT_OK) {
-                mGoogleApiClient.connect();
-            } else {
-                BaseGameUtils.showActivityResultError(this, requestCode, resultCode, R.string.google_failure);
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onConnectionSuspended(int i) {
+        Log.d("Game", "Google onConnectionSuspended");
     }
 }

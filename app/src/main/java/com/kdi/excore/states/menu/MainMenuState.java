@@ -17,18 +17,20 @@ public class MainMenuState extends Menu {
     private Rect playButton;
     private Rect optionButton;
     private Rect aboutButton;
-    private Rect rankButton;
+    private Rect googleButton;
 
     private String strPlay;
-    private String strRank;
+    private String strGoogle;
     private String strOptions;
     private String strAbout;
+
+    private String subGoogle;
 
     private long playTimer;
     private long playDiff;
 
-    private long rankTimer;
-    private long rankDiff;
+    private long googleTimer;
+    private long googleDiff;
 
     private long optionsTimer;
     private long optionsDiff;
@@ -52,9 +54,11 @@ public class MainMenuState extends Menu {
             showAnim = true;
         }
 
-        if (rankButton.contains((int) x, (int) y)) {
-            rankTimer = System.nanoTime();
+        if (googleButton.contains((int) x, (int) y)) {
+            googleTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
+            nextState = new GoogleState(stateManager, game, anim.color);
+            showAnim = true;
         }
 
         if (optionButton.contains((int) x, (int) y)) {
@@ -82,9 +86,9 @@ public class MainMenuState extends Menu {
             if (playDiff > flashInterval) playTimer = 0;
         }
 
-        if (rankTimer != 0) {
-            rankDiff = (System.nanoTime() - rankTimer) / 1000000;
-            if (rankDiff > flashInterval) rankTimer = 0;
+        if (googleTimer != 0) {
+            googleDiff = (System.nanoTime() - googleTimer) / 1000000;
+            if (googleDiff > flashInterval) googleTimer = 0;
         }
 
         if (optionsTimer != 0) {
@@ -103,12 +107,12 @@ public class MainMenuState extends Menu {
         super.draw(canvas);
 
         drawButton(canvas, playButton, strPlay, null);
-        drawButton(canvas, rankButton, strRank, null);
+        drawButton(canvas, googleButton, strGoogle, subGoogle);
         drawButton(canvas, optionButton, strOptions, null);
         drawButton(canvas, aboutButton, strAbout, null);
 
         flashButton(canvas, playButton, playTimer);
-        flashButton(canvas, rankButton, rankTimer);
+        flashButton(canvas, googleButton, googleTimer);
         flashButton(canvas, optionButton, optionsTimer);
         flashButton(canvas, aboutButton, aboutTimer);
 
@@ -117,7 +121,8 @@ public class MainMenuState extends Menu {
 
     private void initButtons() {
         strPlay = "- P L A Y -";
-        strRank = "- R A N K -";
+        strGoogle = "- G O O G L E  P L A Y -";
+        subGoogle = "L e a d e r b o a r d s   a n d   s t u f f";
         strOptions = "- O P T I O N S -";
         strAbout = "- C R E D I T S -";
 
@@ -133,7 +138,7 @@ public class MainMenuState extends Menu {
 
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;
-        rankButton = new Rect(left, top, right, bottom);
+        googleButton = new Rect(left, top, right, bottom);
 
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;

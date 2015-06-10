@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import com.kdi.excore.R;
 import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.PlayState;
@@ -44,13 +45,13 @@ public class ContinueState extends Substate {
     public int numCont;
 
     private boolean enableSwipe = true;
-    private PlayState platState;
+    private PlayState playState;
 
     public ContinueState(Game game, StateManager stateManager, PlayState playState) {
         super(game, stateManager);
         color = game.preferences.getSetting(ExcoreSharedPreferences.KEY_TRANS) ? Utils.getRandomColor(false) : Utils.getRandomColor(true);
         timeIsRunning = false;
-        this.platState = playState;
+        this.playState = playState;
         init();
         game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
     }
@@ -101,7 +102,7 @@ public class ContinueState extends Substate {
                 continueDiff = (System.nanoTime() - continueTimer) / 1000000;
                 if (continueDiff > continueLength) {
                     continueTimer = 0;
-                    nextState = new GameOverState(stateManager, game, platState.player.score, platState.waveNumber, platState.player.enemiesKilled);
+                    nextState = new GameOverState(stateManager, game, playState.player.score, playState.waveNumber, playState.player.enemiesKilled, playState.mode);
                     showExitAnim = true;
                 }
             }
@@ -140,10 +141,15 @@ public class ContinueState extends Substate {
 
         if (noButton.contains((int) x, (int) y)) {
             noTimer = System.nanoTime();
-            nextState = new GameOverState(stateManager, game, platState.player.score, platState.waveNumber, platState.player.enemiesKilled);
+            nextState = new GameOverState(stateManager, game, playState.player.score, playState.waveNumber, playState.player.enemiesKilled, playState.mode);
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             showExitAnim = true;
             continueTimer = 0;
+
+            if (playState.destrBlue > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_blue_hunter), playState.destrBlue);
+            if (playState.destrGreen > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_green_huter), playState.destrGreen);
+            if (playState.destrPink > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_pink_hunter), playState.destrPink);
+            if (playState.destrYellow > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_yellow_hunter), playState.destrYellow);
         }
     }
 
