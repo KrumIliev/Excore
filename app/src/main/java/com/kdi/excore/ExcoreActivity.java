@@ -31,7 +31,7 @@ public class ExcoreActivity extends BaseGameActivity implements GameListener, Go
 
         game = new Game(this, this);
         setContentView(game);
-        beginUserInitiatedSignIn();
+        //beginUserInitiatedSignIn();
     }
 
     @Override

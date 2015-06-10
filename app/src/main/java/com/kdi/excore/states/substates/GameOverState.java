@@ -12,6 +12,7 @@ import com.kdi.excore.game.Game;
 import com.kdi.excore.states.State;
 import com.kdi.excore.states.StateManager;
 import com.kdi.excore.states.menu.MainMenuState;
+import com.kdi.excore.utils.Achievements;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.utils.Utils;
 
@@ -66,8 +67,9 @@ public class GameOverState extends State {
     private ArrayList<Enemy> objects;
 
     private int scoreMultiplier;
+    private Achievements achievements;
 
-    public GameOverState(StateManager stateManager, Game game, int score, int wave, int enemies, int mode) {
+    public GameOverState(StateManager stateManager, Game game, int score, int wave, int enemies, int mode, Achievements achievements) {
         super(stateManager, game);
         this.score = score;
         this.wave = wave;
@@ -75,8 +77,9 @@ public class GameOverState extends State {
         this.mode = mode;
         background = Color.rgb(150, 0, 0);
         game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, false);
+        this.achievements = achievements;
         init();
-        submitScore();
+        checkAchievementsAndSubmitScore();
     }
 
     private void init() {
@@ -115,12 +118,53 @@ public class GameOverState extends State {
         initObjects();
     }
 
-    private void submitScore() {
+    private void checkAchievementsAndSubmitScore() {
         int finalScore = score + wave * enemies;
-        if (finalScore > 50000) game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_score_frenzy));
-        if (wave > 1) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_wave_master), wave - 1);
-        if (enemies == 0) game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_professional_n00b));
-        if (enemies > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_core_exterminator), enemies);
+        if (finalScore > 50000)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_score_frenzy));
+        if (wave > 1)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_wave_master), wave - 1);
+        if (enemies == 0)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_professional_n00b));
+        if (enemies > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_core_exterminator), enemies);
+
+        if (achievements.blue > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_blue_hunter), achievements.blue);
+        if (achievements.green > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_green_huter), achievements.green);
+        if (achievements.pink > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_pink_hunter), achievements.pink);
+        if (achievements.yellow > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_yellow_hunter), achievements.yellow);
+
+        if (achievements.normalNewbie)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_newbie));
+        if (achievements.hardcoreNewbie)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_newbie));
+        if (achievements.timeNewbie)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_newbie));
+        if (achievements.normalPro)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_pro));
+        if (achievements.hardcorePro)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_pro));
+        if (achievements.timePro)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_pro));
+        if (achievements.normalGod)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_god));
+        if (achievements.hardcoreGod)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_god));
+        if (achievements.timeGod)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_god));
+
+        if (achievements.theFlash)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_the_flash));
+        if (achievements.lucky)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_lucky));
+        if (achievements.updatesWeak)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_updates_are_for_the_weak));
+        if (achievements.overcharge)
+            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_overcharge));
 
         switch (mode) {
             case 0:

@@ -18,6 +18,7 @@ import com.kdi.excore.game.Game;
 import com.kdi.excore.states.substates.ContinueState;
 import com.kdi.excore.states.substates.GameOverState;
 import com.kdi.excore.states.substates.PauseState;
+import com.kdi.excore.utils.Achievements;
 import com.kdi.excore.utils.Utils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
 import com.kdi.excore.xfx.AudioPlayer;
@@ -98,18 +99,15 @@ public class PlayState extends State {
     /**
      * Achievement triggers
      */
-    public boolean achTheFlash = false;
-    public boolean achLucky = true;
-    public boolean achUpdatesWeak = true;
-    public int destrBlue = 0;
-    public int destrGreen = 0;
-    public int destrPink = 0;
-    public int destrYellow = 0;
+    public Achievements achievements;
+    public boolean lucky = true;
+    public boolean updatesWeak = true;
 
     public PlayState(StateManager stateManager, Game game, int color, int mode) {
         super(stateManager, game);
         background = color;
         this.mode = mode;
+        achievements = new Achievements();
         init();
         game.preferences.setSetting(ExcoreSharedPreferences.KEY_MOVE, true);
     }
@@ -217,13 +215,7 @@ public class PlayState extends State {
             boolean remove = exitAnim.update();
             if (remove) {
                 showExitAnim = false;
-
-                if (destrBlue > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_blue_hunter), destrBlue);
-                if (destrGreen > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_green_huter), destrGreen);
-                if (destrPink > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_pink_hunter), destrPink);
-                if (destrYellow > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_yellow_hunter), destrYellow);
-
-                stateManager.setState(new GameOverState(stateManager, game, player.score, waveNumber, player.enemiesKilled, mode));
+                stateManager.setState(new GameOverState(stateManager, game, player.score, waveNumber, player.enemiesKilled, mode, achievements));
             }
         }
     }
@@ -246,7 +238,7 @@ public class PlayState extends State {
             showNextWaveAnimation = true;
             if (mode == MODE_TIME_ATTACK) {
                 countdownDiff = (System.nanoTime() - countdownTimer) / 1000000;
-                if (countdownDiff < 10000) achTheFlash = true;
+                if (countdownDiff < 10000) achievements.theFlash = true;
                 countdownDiff = 0;
                 countdownTimer = System.nanoTime();
             }
@@ -298,10 +290,10 @@ public class PlayState extends State {
                 enemies.remove(i);
                 i--;
 
-                if (enemy.type == Enemy.TYPE_NORMAL) destrBlue++;
-                if (enemy.type == Enemy.TYPE_FAST) destrGreen++;
-                if (enemy.type == Enemy.TYPE_IMMUNE) destrYellow++;
-                if (enemy.type == Enemy.TYPE_STRONG) destrPink++;
+                if (enemy.type == Enemy.TYPE_NORMAL) achievements.blue++;
+                if (enemy.type == Enemy.TYPE_FAST) achievements.green++;
+                if (enemy.type == Enemy.TYPE_IMMUNE) achievements.yellow++;
+                if (enemy.type == Enemy.TYPE_STRONG) achievements.pink++;
 
                 enemy.explode();
                 explosions.add(new Explosion((float) enemy.x, (float) enemy.y, (int) enemy.r, (int) enemy.r + 30));
@@ -447,13 +439,13 @@ public class PlayState extends State {
                 if (powerUp.type == PowerUp.TYPE_LIFE) {
                     game.audioPlayer.playSound(AudioPlayer.POWER_UP_LIFE);
                     player.gainLife();
-                    achLucky = false;
+                    lucky = false;
                 }
                 if (powerUp.type == PowerUp.TYPE_POWER) {
                     game.audioPlayer.playSound(AudioPlayer.POWER_UP_POWER);
                     player.increasePower(1);
-                    achLucky = false;
-                    achUpdatesWeak = false;
+                    lucky = false;
+                    updatesWeak = false;
                 }
 
                 if (powerUp.type == PowerUp.TYPE_SLOW) {
@@ -466,14 +458,14 @@ public class PlayState extends State {
                         enemy.fast = false;
                         enemy.slow = true;
                     }
-                    achLucky = false;
+                    lucky = false;
                 }
 
                 if (powerUp.type == PowerUp.TYPE_DESTROY) {
                     game.audioPlayer.playSound(AudioPlayer.POWER_UP_DESTROY);
                     for (Enemy enemy : enemies)
                         enemy.destroy();
-                    achLucky = false;
+                    lucky = false;
                 }
 
                 if (powerUp.type == PowerUp.TYPE_FASTER_ENEMY) {
@@ -500,7 +492,7 @@ public class PlayState extends State {
                     immortalTimer = System.nanoTime();
                     player.immortal = true;
                     if (immortalTopY == 0) immortalTopY = getFreeTimerPosition();
-                    achLucky = false;
+                    lucky = false;
                 }
 
                 if (powerUp.type == PowerUp.TYPE_DOUBLE_SCORE) {
@@ -509,7 +501,7 @@ public class PlayState extends State {
                     scoreMultiplier *= 2; // Doubles the score multiplier every power up the player collects
                     if (scoreMultiplier > 64) scoreMultiplier = 64; // 64 will be max multiplier
                     if (scoreTopY == 0) scoreTopY = getFreeTimerPosition();
-                    achLucky = false;
+                    lucky = false;
                 }
 
                 powerUps.remove(i);
@@ -720,40 +712,26 @@ public class PlayState extends State {
 
     private void checkAchievements() {
         if (waveNumber == 11) {
-            if (mode == MODE_NORMAL)
-                game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_newbie));
-
+            if (mode == MODE_NORMAL) achievements.normalNewbie = true;
             if (mode == MODE_HARDCORE) {
-                game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_newbie));
-                if (achUpdatesWeak)
-                    game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_updates_are_for_the_weak));
+                achievements.hardcoreNewbie = true;
+                if (updatesWeak) achievements.updatesWeak = true;
             }
-
-            if (mode == MODE_TIME_ATTACK)
-                game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_newbie));
-
-            if (achLucky) game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_lucky));
+            if (mode == MODE_TIME_ATTACK) achievements.timeNewbie = true;
+            if (lucky) achievements.lucky = true;
         }
 
         if (waveNumber == 21) {
-            if (mode == MODE_NORMAL)
-                game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_pro));
-            if (mode == MODE_HARDCORE)
-                game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_pro));
-            if (mode == MODE_TIME_ATTACK)
-                game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_pro));
+            if (mode == MODE_NORMAL) achievements.normalPro = true;
+            if (mode == MODE_HARDCORE) achievements.hardcorePro = true;
+            if (mode == MODE_TIME_ATTACK) achievements.timePro = true;
         }
 
         if (waveNumber == 31) {
-            if (mode == MODE_NORMAL)
-                game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_god));
-            if (mode == MODE_HARDCORE)
-                game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_god));
-            if (mode == MODE_TIME_ATTACK)
-                game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_god));
+            if (mode == MODE_NORMAL) achievements.normalGod = true;
+            if (mode == MODE_HARDCORE) achievements.hardcoreGod = true;
+            if (mode == MODE_TIME_ATTACK) achievements.timeGod = true;
         }
-
-        if (achTheFlash) game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_the_flash));
     }
 
     private void generateWave() {

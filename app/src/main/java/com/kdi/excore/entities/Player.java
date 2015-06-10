@@ -182,7 +182,7 @@ public class Player {
 
             if (powerLevel == 5) {
                 if (dischargeTimer != 0) {
-                    game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_overcharge));
+                    playState.achievements.overcharge = true;
                     game.audioPlayer.playSound(AudioPlayer.SOUND_WEAPON_DISCHARGE);
                     playState.addBullet(270, x, y - 10);
                     playState.addBullet(275, x + 5, y - 10);

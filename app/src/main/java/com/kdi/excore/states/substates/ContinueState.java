@@ -102,7 +102,8 @@ public class ContinueState extends Substate {
                 continueDiff = (System.nanoTime() - continueTimer) / 1000000;
                 if (continueDiff > continueLength) {
                     continueTimer = 0;
-                    nextState = new GameOverState(stateManager, game, playState.player.score, playState.waveNumber, playState.player.enemiesKilled, playState.mode);
+                    nextState = new GameOverState(stateManager, game, playState.player.score, playState.waveNumber, playState.player.enemiesKilled,
+                            playState.mode, playState.achievements);
                     showExitAnim = true;
                 }
             }
@@ -141,15 +142,11 @@ public class ContinueState extends Substate {
 
         if (noButton.contains((int) x, (int) y)) {
             noTimer = System.nanoTime();
-            nextState = new GameOverState(stateManager, game, playState.player.score, playState.waveNumber, playState.player.enemiesKilled, playState.mode);
+            nextState = new GameOverState(stateManager, game, playState.player.score, playState.waveNumber, playState.player.enemiesKilled,
+                    playState.mode, playState.achievements);
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             showExitAnim = true;
             continueTimer = 0;
-
-            if (playState.destrBlue > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_blue_hunter), playState.destrBlue);
-            if (playState.destrGreen > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_green_huter), playState.destrGreen);
-            if (playState.destrPink > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_pink_hunter), playState.destrPink);
-            if (playState.destrYellow > 0) game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_yellow_hunter), playState.destrYellow);
         }
     }
 
