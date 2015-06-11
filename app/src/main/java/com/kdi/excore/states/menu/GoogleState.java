@@ -53,25 +53,21 @@ public class GoogleState extends Menu {
         if (lNormal.contains((int) x, (int) y)) {
             normalTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
-            game.litener.openLeaderboard(game.getContext().getString(R.string.normal_leaderboard));
         }
 
         if (lHardcore.contains((int) x, (int) y)) {
             hardcoreTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
-            game.litener.openLeaderboard(game.getContext().getString(R.string.hardcore_leaderboard));
         }
 
         if (lTime.contains((int) x, (int) y)) {
             attackTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
-            game.litener.openLeaderboard(game.getContext().getString(R.string.time_leaderboard));
         }
 
         if (achievements.contains((int) x, (int) y)) {
             achievementsTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
-            game.litener.openAchievements();
         }
 
         if (back.contains((int) x, (int) y)) {
@@ -88,17 +84,26 @@ public class GoogleState extends Menu {
 
         if (normalTimer != 0) {
             normalDiff = (System.nanoTime() - normalTimer) / 1000000;
-            if (normalDiff > flashInterval) normalTimer = 0;
+            if (normalDiff > flashInterval) {
+                normalTimer = 0;
+                game.litener.openLeaderboard(game.getContext().getString(R.string.normal_leaderboard));
+            }
         }
 
         if (hardcoreTimer != 0) {
             hardcoreDiff = (System.nanoTime() - hardcoreTimer) / 1000000;
-            if (hardcoreDiff > flashInterval) hardcoreTimer = 0;
+            if (hardcoreDiff > flashInterval) {
+                hardcoreTimer = 0;
+                game.litener.openLeaderboard(game.getContext().getString(R.string.hardcore_leaderboard));
+            }
         }
 
         if (attackTimer != 0) {
             attackDiff = (System.nanoTime() - attackTimer) / 1000000;
-            if (attackDiff > flashInterval) attackTimer = 0;
+            if (attackDiff > flashInterval) {
+                attackTimer = 0;
+                game.litener.openLeaderboard(game.getContext().getString(R.string.time_leaderboard));
+            }
         }
 
         if (backTimer != 0) {
@@ -108,7 +113,10 @@ public class GoogleState extends Menu {
 
         if (achievementsTimer != 0) {
             achievementsDiff = (System.nanoTime() - achievementsTimer) / 1000000;
-            if (achievementsDiff > flashInterval) achievementsTimer = 0;
+            if (achievementsDiff > flashInterval) {
+                achievementsTimer = 0;
+                game.litener.openAchievements();
+            }
         }
     }
 

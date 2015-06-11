@@ -1,7 +1,6 @@
 package com.kdi.excore;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -31,33 +30,28 @@ public class ExcoreActivity extends BaseGameActivity implements GameListener, Go
 
         game = new Game(this, this);
         setContentView(game);
-        //beginUserInitiatedSignIn();
     }
 
     @Override
-    public void onSignInFailed() {
-        Log.d("Game", "onSignInFailed()");
-    }
+    public void onSignInFailed() {}
 
     @Override
     public void onSignInSucceeded() {
         mGoogleApiClient = getApiClient();
-        Log.d("Game", "onSignInSucceeded()");
     }
 
     @Override
     public void addToLeaderboard(String leaderboardID, int score) {
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
             Games.Leaderboards.submitScore(mGoogleApiClient, leaderboardID, score);
-        } else {
-            Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
     public void openLeaderboard(String leaderboardID) {
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient, leaderboardID), 1919);
+        } else if (getApiClient().isConnecting()) {
+            Toast.makeText(this, "Connecting ... ", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
         }
@@ -65,27 +59,22 @@ public class ExcoreActivity extends BaseGameActivity implements GameListener, Go
 
     @Override
     public void unlockAchievement(String achievementID) {
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
             Games.Achievements.unlock(mGoogleApiClient, achievementID);
-        } else {
-            Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
     public void incrementAchievement(String achievementID, int value) {
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
             Games.Achievements.increment(mGoogleApiClient, achievementID, value);
-            Log.d("Game", "Incrementing: " + achievementID + " With: " + value);
-        } else {
-            Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
     public void openAchievements() {
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), 2121);
+        } else if (getApiClient().isConnecting()) {
+            Toast.makeText(this, "Connecting ... ", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "Google play not connected", Toast.LENGTH_LONG).show();
         }
@@ -95,6 +84,7 @@ public class ExcoreActivity extends BaseGameActivity implements GameListener, Go
     protected void onResume() {
         super.onResume();
         game.paused = false;
+        if (getApiClient().isConnected()) mGoogleApiClient = getApiClient();
     }
 
     @Override
@@ -104,22 +94,11 @@ public class ExcoreActivity extends BaseGameActivity implements GameListener, Go
     }
 
     @Override
-    public void onExit() {
-        finish();
-    }
+    public void onConnected(Bundle bundle) {}
 
     @Override
-    public void onConnected(Bundle bundle) {
-        Log.d("Game", "Google Connected");
-    }
+    public void onConnectionFailed(ConnectionResult connectionResult) {}
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.d("Game", "Google Failed" + connectionResult.toString());
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d("Game", "Google onConnectionSuspended");
-    }
+    public void onConnectionSuspended(int i) {}
 }

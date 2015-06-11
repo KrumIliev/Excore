@@ -120,23 +120,12 @@ public class GameOverState extends State {
 
     private void checkAchievementsAndSubmitScore() {
         int finalScore = score + wave * enemies;
+
         if (finalScore > 50000)
             game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_score_frenzy));
-        if (wave > 1)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_wave_master), wave - 1);
         if (enemies == 0)
             game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_professional_n00b));
-        if (enemies > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_core_exterminator), enemies);
 
-        if (achievements.blue > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_blue_hunter), achievements.blue);
-        if (achievements.green > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_green_huter), achievements.green);
-        if (achievements.pink > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_pink_hunter), achievements.pink);
-        if (achievements.yellow > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_yellow_hunter), achievements.yellow);
 
         if (achievements.normalNewbie)
             game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_newbie));
@@ -165,6 +154,19 @@ public class GameOverState extends State {
             game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_updates_are_for_the_weak));
         if (achievements.overcharge)
             game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_overcharge));
+
+        if (enemies > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_core_exterminator), enemies);
+        if (wave > 1)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_wave_master), wave - 1);
+        if (achievements.blue > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_blue_hunter), achievements.blue);
+        if (achievements.green > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_green_huter), achievements.green);
+        if (achievements.pink > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_pink_hunter), achievements.pink);
+        if (achievements.yellow > 0)
+            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_yellow_hunter), achievements.yellow);
 
         switch (mode) {
             case 0:

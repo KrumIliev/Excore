@@ -16,13 +16,13 @@ public class MainMenuState extends Menu {
 
     private Rect playButton;
     private Rect optionButton;
-    private Rect aboutButton;
+    private Rect creditsButton;
     private Rect googleButton;
 
     private String strPlay;
     private String strGoogle;
     private String strOptions;
-    private String strAbout;
+    private String strCredits;
 
     private String subGoogle;
 
@@ -35,8 +35,8 @@ public class MainMenuState extends Menu {
     private long optionsTimer;
     private long optionsDiff;
 
-    private long aboutTimer;
-    private long aboutDiff;
+    private long creditsTimer;
+    private long creditsDiff;
 
     public MainMenuState(StateManager stateManager, Game game, int color) {
         super(stateManager, game, color, Enemy.TYPE_NORMAL);
@@ -69,8 +69,8 @@ public class MainMenuState extends Menu {
         }
 
 
-        if (aboutButton.contains((int) x, (int) y)) {
-            aboutTimer = System.nanoTime();
+        if (creditsButton.contains((int) x, (int) y)) {
+            creditsTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             nextState = new CreditsState(stateManager, game, anim.color);
             showAnim = true;
@@ -96,9 +96,9 @@ public class MainMenuState extends Menu {
             if (optionsDiff > flashInterval) optionsTimer = 0;
         }
 
-        if (aboutTimer != 0) {
-            aboutDiff = (System.nanoTime() - aboutTimer) / 1000000;
-            if (aboutDiff > flashInterval) aboutTimer = 0;
+        if (creditsTimer != 0) {
+            creditsDiff = (System.nanoTime() - creditsTimer) / 1000000;
+            if (creditsDiff > flashInterval) creditsTimer = 0;
         }
     }
 
@@ -109,12 +109,12 @@ public class MainMenuState extends Menu {
         drawButton(canvas, playButton, strPlay, null);
         drawButton(canvas, googleButton, strGoogle, subGoogle);
         drawButton(canvas, optionButton, strOptions, null);
-        drawButton(canvas, aboutButton, strAbout, null);
+        drawButton(canvas, creditsButton, strCredits, null);
 
         flashButton(canvas, playButton, playTimer);
         flashButton(canvas, googleButton, googleTimer);
         flashButton(canvas, optionButton, optionsTimer);
-        flashButton(canvas, aboutButton, aboutTimer);
+        flashButton(canvas, creditsButton, creditsTimer);
 
         if (showAnim) anim.draw(canvas);
     }
@@ -124,7 +124,7 @@ public class MainMenuState extends Menu {
         strGoogle = "- G O O G L E  P L A Y -";
         subGoogle = "L e a d e r b o a r d s   a n d   s t u f f";
         strOptions = "- O P T I O N S -";
-        strAbout = "- C R E D I T S -";
+        strCredits = "- C R E D I T S -";
 
         int buttonWidth = game.width / 2 + 100;
         int buttonHeight = 100;
@@ -146,6 +146,6 @@ public class MainMenuState extends Menu {
 
         top = bottom + buttonVerticalSpace;
         bottom = top + buttonHeight;
-        aboutButton = new Rect(left, top, right, bottom);
+        creditsButton = new Rect(left, top, right, bottom);
     }
 }
