@@ -105,7 +105,6 @@ public class PauseState extends Substate {
                 game.audioPlayer.playMusic();
             }
         }
-
     }
 
     @Override

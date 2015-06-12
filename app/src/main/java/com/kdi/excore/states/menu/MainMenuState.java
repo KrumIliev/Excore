@@ -21,6 +21,7 @@ public class MainMenuState extends Menu {
 
     private String strPlay;
     private String strGoogle;
+    private String strConnecting;
     private String strOptions;
     private String strCredits;
 
@@ -41,6 +42,12 @@ public class MainMenuState extends Menu {
     public MainMenuState(StateManager stateManager, Game game, int color) {
         super(stateManager, game, color, Enemy.TYPE_NORMAL);
         initButtons();
+        strPlay = "- P L A Y -";
+        strGoogle = "- S C O R E S -";
+        strConnecting = "- C O N N E C T I N G . . . -";
+        subGoogle = "L e a d e r b o a r d s   a n d   s t u f f";
+        strOptions = "- O P T I O N S -";
+        strCredits = "- C R E D I T S -";
     }
 
     @Override
@@ -54,7 +61,7 @@ public class MainMenuState extends Menu {
             showAnim = true;
         }
 
-        if (googleButton.contains((int) x, (int) y)) {
+        if (game.googleIsConected && googleButton.contains((int) x, (int) y)) {
             googleTimer = System.nanoTime();
             game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
             nextState = new GoogleState(stateManager, game, anim.color);
@@ -107,25 +114,22 @@ public class MainMenuState extends Menu {
         super.draw(canvas);
 
         drawButton(canvas, playButton, strPlay, null);
-        drawButton(canvas, googleButton, strGoogle, subGoogle);
         drawButton(canvas, optionButton, strOptions, null);
         drawButton(canvas, creditsButton, strCredits, null);
 
         flashButton(canvas, playButton, playTimer);
-        flashButton(canvas, googleButton, googleTimer);
         flashButton(canvas, optionButton, optionsTimer);
         flashButton(canvas, creditsButton, creditsTimer);
+
+
+        if (game.googleIsConected) drawButton(canvas, googleButton, strGoogle, subGoogle);
+        else drawButton(canvas, googleButton, strConnecting, subGoogle);
+        flashButton(canvas, googleButton, googleTimer);
 
         if (showAnim) anim.draw(canvas);
     }
 
     private void initButtons() {
-        strPlay = "- P L A Y -";
-        strGoogle = "- G O O G L E  P L A Y -";
-        subGoogle = "L e a d e r b o a r d s   a n d   s t u f f";
-        strOptions = "- O P T I O N S -";
-        strCredits = "- C R E D I T S -";
-
         int buttonWidth = game.width / 2 + 100;
         int buttonHeight = 100;
         int buttonVerticalSpace = (game.height - buttonHeight * 4) / 5;

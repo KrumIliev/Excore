@@ -47,11 +47,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
 
     private StateManager stateManager;
     public ExcoreSharedPreferences preferences;
-    public GameListener litener;
+    public GameListener listener;
+    public boolean googleIsConected = false;
 
     public Game(Context context, GameListener listener) {
         super(context);
-        this.litener = listener;
+        this.listener = listener;
         init();
     }
 

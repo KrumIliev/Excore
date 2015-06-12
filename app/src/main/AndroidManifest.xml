@@ -3,9 +3,6 @@
     package="com.kdi.excore"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
-
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="true"

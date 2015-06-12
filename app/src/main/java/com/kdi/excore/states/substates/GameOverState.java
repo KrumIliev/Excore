@@ -122,61 +122,61 @@ public class GameOverState extends State {
         int finalScore = score + wave * enemies;
 
         if (finalScore > 50000)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_score_frenzy));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_score_frenzy));
         if (enemies == 0)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_professional_n00b));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_professional_n00b));
 
 
         if (achievements.normalNewbie)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_newbie));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_newbie));
         if (achievements.hardcoreNewbie)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_newbie));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_newbie));
         if (achievements.timeNewbie)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_newbie));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_newbie));
         if (achievements.normalPro)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_pro));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_pro));
         if (achievements.hardcorePro)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_pro));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_pro));
         if (achievements.timePro)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_pro));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_pro));
         if (achievements.normalGod)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_god));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_normal_god));
         if (achievements.hardcoreGod)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_god));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_hardcore_god));
         if (achievements.timeGod)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_god));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_time_attack_god));
 
         if (achievements.theFlash)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_the_flash));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_the_flash));
         if (achievements.lucky)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_lucky));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_lucky));
         if (achievements.updatesWeak)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_updates_are_for_the_weak));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_updates_are_for_the_weak));
         if (achievements.overcharge)
-            game.litener.unlockAchievement(game.getContext().getString(R.string.achievement_overcharge));
+            game.listener.unlockAchievement(game.getContext().getString(R.string.achievement_overcharge));
 
         if (enemies > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_core_exterminator), enemies);
+            game.listener.incrementAchievement(game.getContext().getString(R.string.achievement_core_exterminator), enemies);
         if (wave > 1)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_wave_master), wave - 1);
+            game.listener.incrementAchievement(game.getContext().getString(R.string.achievement_wave_master), wave - 1);
         if (achievements.blue > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_blue_hunter), achievements.blue);
+            game.listener.incrementAchievement(game.getContext().getString(R.string.achievement_blue_hunter), achievements.blue);
         if (achievements.green > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_green_huter), achievements.green);
+            game.listener.incrementAchievement(game.getContext().getString(R.string.achievement_green_huter), achievements.green);
         if (achievements.pink > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_pink_hunter), achievements.pink);
+            game.listener.incrementAchievement(game.getContext().getString(R.string.achievement_pink_hunter), achievements.pink);
         if (achievements.yellow > 0)
-            game.litener.incrementAchievement(game.getContext().getString(R.string.achievement_yellow_hunter), achievements.yellow);
+            game.listener.incrementAchievement(game.getContext().getString(R.string.achievement_yellow_hunter), achievements.yellow);
 
         switch (mode) {
             case 0:
-                game.litener.addToLeaderboard(game.getContext().getString(R.string.normal_leaderboard), finalScore);
+                game.listener.addToLeaderboard(game.getContext().getString(R.string.normal_leaderboard), finalScore);
                 break;
             case 1:
-                game.litener.addToLeaderboard(game.getContext().getString(R.string.hardcore_leaderboard), finalScore);
+                game.listener.addToLeaderboard(game.getContext().getString(R.string.hardcore_leaderboard), finalScore);
                 break;
             case 2:
-                game.litener.addToLeaderboard(game.getContext().getString(R.string.time_leaderboard), finalScore);
+                game.listener.addToLeaderboard(game.getContext().getString(R.string.time_leaderboard), finalScore);
                 break;
         }
     }

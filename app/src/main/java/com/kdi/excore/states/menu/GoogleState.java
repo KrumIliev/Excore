@@ -86,7 +86,7 @@ public class GoogleState extends Menu {
             normalDiff = (System.nanoTime() - normalTimer) / 1000000;
             if (normalDiff > flashInterval) {
                 normalTimer = 0;
-                game.litener.openLeaderboard(game.getContext().getString(R.string.normal_leaderboard));
+                game.listener.openLeaderboard(game.getContext().getString(R.string.normal_leaderboard));
             }
         }
 
@@ -94,7 +94,7 @@ public class GoogleState extends Menu {
             hardcoreDiff = (System.nanoTime() - hardcoreTimer) / 1000000;
             if (hardcoreDiff > flashInterval) {
                 hardcoreTimer = 0;
-                game.litener.openLeaderboard(game.getContext().getString(R.string.hardcore_leaderboard));
+                game.listener.openLeaderboard(game.getContext().getString(R.string.hardcore_leaderboard));
             }
         }
 
@@ -102,7 +102,7 @@ public class GoogleState extends Menu {
             attackDiff = (System.nanoTime() - attackTimer) / 1000000;
             if (attackDiff > flashInterval) {
                 attackTimer = 0;
-                game.litener.openLeaderboard(game.getContext().getString(R.string.time_leaderboard));
+                game.listener.openLeaderboard(game.getContext().getString(R.string.time_leaderboard));
             }
         }
 
@@ -115,7 +115,7 @@ public class GoogleState extends Menu {
             achievementsDiff = (System.nanoTime() - achievementsTimer) / 1000000;
             if (achievementsDiff > flashInterval) {
                 achievementsTimer = 0;
-                game.litener.openAchievements();
+                game.listener.openAchievements();
             }
         }
     }
