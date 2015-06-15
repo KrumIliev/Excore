@@ -117,6 +117,11 @@ public class AudioPlayer {
         }
     }
 
+    public void playNextMusic() {
+        currentIndex++;
+        playMusic();
+    }
+
     public void stopMusic() {
         if (mediaPlayer != null) mediaPlayer.release();
     }

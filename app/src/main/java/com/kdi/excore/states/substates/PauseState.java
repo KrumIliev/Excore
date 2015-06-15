@@ -102,7 +102,7 @@ public class PauseState extends Substate {
             if (buttonNext.contains((int) x, (int) y)) {
                 nextTimer = System.nanoTime();
                 game.audioPlayer.playSound(AudioPlayer.SOUND_BUTTON);
-                game.audioPlayer.playMusic();
+                game.audioPlayer.playNextMusic();
             }
         }
     }

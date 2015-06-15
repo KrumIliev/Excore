@@ -67,8 +67,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         devWidth = size.x;
         devHeight = size.y;
 
-        Log.d(LOG_TAG, "Screen w: " + devWidth + " Screen h: " + devHeight);
-
         height = 800;
 
         if (devHeight > 900) {
@@ -79,8 +77,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, Runnabl
         } else {
             width = 480;
         }
-
-        Log.d(LOG_TAG, "Canvas w: " + width + " Canvas h: " + height);
 
         preferences = new ExcoreSharedPreferences(getContext());
         background = Utils.getRandomColor(false);

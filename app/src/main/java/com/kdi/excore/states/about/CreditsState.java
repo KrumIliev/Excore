@@ -39,6 +39,7 @@ public class CreditsState extends Menu {
     private void initStrings() {
         allCredits = new ArrayList<>();
         allCredits.add(new CreditsText(game, "- D E V E L O P E R -", "K R U M   I L I E V"));
+        allCredits.add(new CreditsText(game, "- O R I G I N A L   I D E A -", "F o r e i g n G u y M i k e"));
         allCredits.add(new CreditsText(game, "- M U S I C -", null));
         allCredits.add(new CreditsText(game, "A   H i m i t s u", "C e a s e"));
         allCredits.add(new CreditsText(game, "D a P l a q u e", "D r e a m"));

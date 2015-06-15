@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.kdi.excore.R;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.PlayState;
 import com.kdi.excore.states.State;
@@ -240,7 +239,10 @@ public class Player {
 
     public void gainLife() {
         lives++;
-        if (lives > 5) lives = 5;
+        if (lives > 5) {
+            lives = 5;
+            visibleScore += 2500;
+        }
     }
 
     public void addScore(int i) {
@@ -266,7 +268,7 @@ public class Player {
     }
 
     public void continueGame() {
-        score /= 2;
+        score = score - (score / 4) * 3;
         visibleScore = score;
         lives = 3;
         dead = false;

@@ -5,13 +5,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-import com.kdi.excore.R;
 import com.kdi.excore.animations.ColorAnimation;
 import com.kdi.excore.game.Game;
 import com.kdi.excore.states.PlayState;
 import com.kdi.excore.states.StateManager;
-import com.kdi.excore.utils.Utils;
 import com.kdi.excore.utils.ExcoreSharedPreferences;
+import com.kdi.excore.utils.Utils;
 import com.kdi.excore.xfx.AudioPlayer;
 
 /**
@@ -63,7 +62,7 @@ public class ContinueState extends Substate {
         yesString = "- Y E S -";
         noString = "- N O -";
         continueSubString = "C o n t i n u e   a n d   l o s e";
-        continueSub2String = "h a l f   o f   y o u r   s c o r e   s o   f a r";
+        continueSub2String = "2 5 %   o f   y o u r   s c o r e   s o   f a r";
 
         timerString = "10";
         exitAnim = new ColorAnimation(game, Color.rgb(150, 0, 0));
